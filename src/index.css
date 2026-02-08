@@ -140,6 +140,8 @@
 
   html {
     scroll-behavior: smooth;
+    /* Fluid base font size: scales from 14px to 16px based on viewport */
+    font-size: clamp(0.875rem, 0.8rem + 0.4vw, 1rem);
   }
 
   body {
@@ -150,12 +152,21 @@
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Space Grotesk', system-ui, sans-serif;
   }
+
+  /* Fluid typography scale */
+  h1 { font-size: clamp(1.75rem, 1.5rem + 2vw, 3rem); }
+  h2 { font-size: clamp(1.5rem, 1.25rem + 1.5vw, 2.25rem); }
+  h3 { font-size: clamp(1.25rem, 1rem + 1vw, 1.75rem); }
+  h4 { font-size: clamp(1.125rem, 1rem + 0.5vw, 1.5rem); }
+  p { font-size: clamp(0.875rem, 0.8rem + 0.25vw, 1rem); }
 }
 
 @layer components {
-  /* Hero Button Variant */
+  /* Hero Button Variant - fluid sizing */
   .btn-hero {
-    @apply bg-gradient-to-r from-primary to-accent text-white font-semibold px-8 py-3 rounded-lg shadow-lg transition-all duration-300;
+    @apply bg-gradient-to-r from-primary to-accent text-white font-semibold rounded-lg shadow-lg transition-all duration-300;
+    padding: clamp(0.625rem, 0.5rem + 0.5vw, 0.875rem) clamp(1.25rem, 1rem + 1vw, 2rem);
+    font-size: clamp(0.875rem, 0.8rem + 0.25vw, 1rem);
   }
   
   .btn-hero:hover {
@@ -163,63 +174,77 @@
     filter: brightness(1.1);
   }
 
-  /* Emergency Button */
+  /* Emergency Button - fluid */
   .btn-emergency {
-    @apply bg-gradient-to-r from-destructive to-orange-500 text-white font-bold px-6 py-4 rounded-xl shadow-lg animate-pulse;
+    @apply bg-gradient-to-r from-destructive to-orange-500 text-white font-bold rounded-xl shadow-lg animate-pulse;
+    padding: clamp(0.75rem, 0.5rem + 0.75vw, 1rem) clamp(1rem, 0.75rem + 1vw, 1.5rem);
+    font-size: clamp(0.875rem, 0.8rem + 0.25vw, 1rem);
   }
 
-  /* Status Badges */
+  /* Status Badges - fluid */
   .badge-critical {
-    @apply bg-destructive text-destructive-foreground px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide;
+    @apply bg-destructive text-destructive-foreground rounded-full font-bold uppercase tracking-wide;
+    padding: clamp(0.2rem, 0.15rem + 0.15vw, 0.25rem) clamp(0.5rem, 0.4rem + 0.25vw, 0.75rem);
+    font-size: clamp(0.625rem, 0.6rem + 0.1vw, 0.75rem);
   }
 
   .badge-warning {
-    @apply bg-warning text-warning-foreground px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide;
+    @apply bg-warning text-warning-foreground rounded-full font-bold uppercase tracking-wide;
+    padding: clamp(0.2rem, 0.15rem + 0.15vw, 0.25rem) clamp(0.5rem, 0.4rem + 0.25vw, 0.75rem);
+    font-size: clamp(0.625rem, 0.6rem + 0.1vw, 0.75rem);
   }
 
   .badge-success {
-    @apply bg-success text-success-foreground px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide;
+    @apply bg-success text-success-foreground rounded-full font-bold uppercase tracking-wide;
+    padding: clamp(0.2rem, 0.15rem + 0.15vw, 0.25rem) clamp(0.5rem, 0.4rem + 0.25vw, 0.75rem);
+    font-size: clamp(0.625rem, 0.6rem + 0.1vw, 0.75rem);
   }
 
   .badge-info {
-    @apply bg-info text-info-foreground px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide;
+    @apply bg-info text-info-foreground rounded-full font-bold uppercase tracking-wide;
+    padding: clamp(0.2rem, 0.15rem + 0.15vw, 0.25rem) clamp(0.5rem, 0.4rem + 0.25vw, 0.75rem);
+    font-size: clamp(0.625rem, 0.6rem + 0.1vw, 0.75rem);
   }
 
-  /* Dashboard Cards */
+  /* Dashboard Cards - fluid padding */
   .dashboard-card {
-    @apply bg-card rounded-xl border border-border p-6 shadow-sm transition-all duration-300;
+    @apply bg-card rounded-xl border border-border shadow-sm transition-all duration-300;
+    padding: clamp(1rem, 0.75rem + 1vw, 1.5rem);
+    border-radius: clamp(0.5rem, 0.4rem + 0.4vw, 0.75rem);
   }
 
   .dashboard-card:hover {
     @apply shadow-md border-primary/20;
   }
 
-  /* Stat Cards */
+  /* Stat Cards - fluid */
   .stat-card {
-    @apply bg-gradient-to-br from-card to-secondary/30 rounded-xl p-5 border border-border/50;
+    @apply bg-gradient-to-br from-card to-secondary/30 border border-border/50;
+    padding: clamp(0.75rem, 0.5rem + 0.75vw, 1.25rem);
+    border-radius: clamp(0.5rem, 0.4rem + 0.4vw, 0.75rem);
   }
 
   /* Map Container */
   .map-container {
-    @apply rounded-xl overflow-hidden border border-border shadow-md;
+    @apply overflow-hidden border border-border shadow-md;
+    border-radius: clamp(0.5rem, 0.4rem + 0.4vw, 0.75rem);
+    min-height: clamp(200px, 30vh, 400px);
   }
 
-  /* Sidebar Scrollable */
-  .sidebar-scroll {
-    @apply overflow-y-auto scrollbar-thin scrollbar-thumb-sidebar-accent scrollbar-track-transparent;
-  }
-
-  /* Alert Cards */
+  /* Alert Cards - fluid */
   .alert-critical {
-    @apply bg-destructive/10 border-l-4 border-destructive p-4 rounded-r-lg;
+    @apply bg-destructive/10 border-l-4 border-destructive rounded-r-lg;
+    padding: clamp(0.75rem, 0.5rem + 0.5vw, 1rem);
   }
 
   .alert-warning {
-    @apply bg-warning/10 border-l-4 border-warning p-4 rounded-r-lg;
+    @apply bg-warning/10 border-l-4 border-warning rounded-r-lg;
+    padding: clamp(0.75rem, 0.5rem + 0.5vw, 1rem);
   }
 
   .alert-info {
-    @apply bg-info/10 border-l-4 border-info p-4 rounded-r-lg;
+    @apply bg-info/10 border-l-4 border-info rounded-r-lg;
+    padding: clamp(0.75rem, 0.5rem + 0.5vw, 1rem);
   }
 
   /* Glass Effect */
@@ -230,6 +255,40 @@
   .glass-dark {
     @apply bg-black/40 backdrop-blur-md border border-white/10;
   }
+
+  /* Fluid icon containers */
+  .icon-box-sm {
+    width: clamp(2rem, 1.75rem + 1vw, 2.5rem);
+    height: clamp(2rem, 1.75rem + 1vw, 2.5rem);
+  }
+
+  .icon-box-md {
+    width: clamp(2.5rem, 2rem + 1.5vw, 3rem);
+    height: clamp(2.5rem, 2rem + 1.5vw, 3rem);
+  }
+
+  .icon-box-lg {
+    width: clamp(3rem, 2.5rem + 2vw, 4rem);
+    height: clamp(3rem, 2.5rem + 2vw, 4rem);
+  }
+
+  /* Fluid spacing utilities */
+  .gap-fluid-sm { gap: clamp(0.5rem, 0.25rem + 0.5vw, 0.75rem); }
+  .gap-fluid-md { gap: clamp(0.75rem, 0.5rem + 0.75vw, 1.25rem); }
+  .gap-fluid-lg { gap: clamp(1rem, 0.75rem + 1vw, 1.5rem); }
+  
+  .p-fluid-sm { padding: clamp(0.5rem, 0.25rem + 0.5vw, 0.75rem); }
+  .p-fluid-md { padding: clamp(0.75rem, 0.5rem + 0.75vw, 1.25rem); }
+  .p-fluid-lg { padding: clamp(1rem, 0.75rem + 1vw, 1.5rem); }
+
+  /* Fluid text sizes */
+  .text-fluid-xs { font-size: clamp(0.625rem, 0.6rem + 0.1vw, 0.75rem); }
+  .text-fluid-sm { font-size: clamp(0.75rem, 0.7rem + 0.15vw, 0.875rem); }
+  .text-fluid-base { font-size: clamp(0.875rem, 0.8rem + 0.25vw, 1rem); }
+  .text-fluid-lg { font-size: clamp(1rem, 0.9rem + 0.4vw, 1.25rem); }
+  .text-fluid-xl { font-size: clamp(1.125rem, 1rem + 0.5vw, 1.5rem); }
+  .text-fluid-2xl { font-size: clamp(1.25rem, 1.1rem + 0.75vw, 1.875rem); }
+  .text-fluid-3xl { font-size: clamp(1.5rem, 1.25rem + 1vw, 2.25rem); }
 }
 
 @layer utilities {
