@@ -13,6 +13,9 @@ import NotFound from "./pages/NotFound";
 // Layouts
 import DashboardLayout from "./components/layout/DashboardLayout";
 
+// Shared Pages
+import ProfilePage from "./pages/shared/ProfilePage";
+
 // Resident Pages
 import ResidentDashboard from "./pages/resident/ResidentDashboard";
 import EmergencySOS from "./pages/resident/EmergencySOS";
@@ -58,7 +61,7 @@ const App = () => (
               <Route path="alerts" element={<AlertsPage />} />
               <Route path="requests" element={<MyRequests />} />
               <Route path="family" element={<FamilyStatus />} />
-              <Route path="profile" element={<ResidentDashboard />} />
+              <Route path="profile" element={<ProfilePage />} />
             </Route>
 
             {/* Rescuer Routes */}
@@ -69,7 +72,7 @@ const App = () => (
               <Route path="equipment" element={<EquipmentPage />} />
               <Route path="history" element={<HistoryPage />} />
               <Route path="report" element={<RescuerDashboard />} />
-              <Route path="profile" element={<RescuerDashboard />} />
+              <Route path="profile" element={<ProfilePage />} />
             </Route>
 
             {/* Admin Routes */}
@@ -82,7 +85,7 @@ const App = () => (
               <Route path="inventory" element={<AdminDashboard />} />
               <Route path="map" element={<FloodMap />} />
               <Route path="analytics" element={<AdminDashboard />} />
-              <Route path="profile" element={<AdminDashboard />} />
+              <Route path="profile" element={<ProfilePage />} />
             </Route>
 
             {/* Barangay Official Routes */}
@@ -94,7 +97,7 @@ const App = () => (
               <Route path="alerts" element={<AlertsPage />} />
               <Route path="zone" element={<FloodMap />} />
               <Route path="contact" element={<OfficialDashboard />} />
-              <Route path="profile" element={<OfficialDashboard />} />
+              <Route path="profile" element={<ProfilePage />} />
             </Route>
 
             {/* Catch-all */}

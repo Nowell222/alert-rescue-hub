@@ -1,18 +1,19 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { useAuth } from '@/contexts/AuthContext';
-import { supabase } from '@/integrations/supabase/client';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
+  DialogFooter,
 } from '@/components/ui/dialog';
 import {
   Select,
@@ -25,91 +26,185 @@ import {
   ArrowLeft,
   Users,
   Plus,
-  CheckCircle,
+  Trash2,
+  Phone,
+  MapPin,
+  Heart,
+  ShieldCheck,
   AlertTriangle,
   HelpCircle,
-  Trash2
+  Clock,
+  User,
+  Baby,
+  Accessibility,
+  Stethoscope,
+  Edit2
 } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface FamilyMember {
   id: string;
   name: string;
+  relationship: string;
   age: number;
-  status: 'safe' | 'evacuated' | 'need_help';
+  phone: string;
+  address: string;
+  specialNeeds: string[];
+  medicalConditions: string;
+  status: 'safe' | 'needs_help' | 'unknown';
+  lastUpdate: string;
+  notes: string;
 }
 
+const RELATIONSHIPS = [
+  'Spouse', 'Parent', 'Child', 'Sibling', 'Grandparent', 'Grandchild', 
+  'Uncle/Aunt', 'Cousin', 'Nephew/Niece', 'In-Law', 'Other'
+];
+
+const SPECIAL_NEEDS = [
+  { id: 'elderly', label: 'Elderly (60+)', icon: Heart },
+  { id: 'pwd', label: 'Person with Disability', icon: Accessibility },
+  { id: 'infant', label: 'Infant/Child', icon: Baby },
+  { id: 'medical', label: 'Medical Condition', icon: Stethoscope },
+];
+
 export default function FamilyStatusPage() {
-  const { user } = useAuth();
   const [members, setMembers] = useState<FamilyMember[]>([]);
-  const [newMemberName, setNewMemberName] = useState('');
-  const [newMemberAge, setNewMemberAge] = useState('');
-  const [dialogOpen, setDialogOpen] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [editingMember, setEditingMember] = useState<FamilyMember | null>(null);
+  const [formData, setFormData] = useState({
+    name: '',
+    relationship: '',
+    age: '',
+    phone: '',
+    address: '',
+    specialNeeds: [] as string[],
+    medicalConditions: '',
+    notes: '',
+  });
 
   useEffect(() => {
-    // Load from localStorage
-    const saved = localStorage.getItem(`family_${user?.id}`);
+    const saved = localStorage.getItem('family_members');
     if (saved) {
       setMembers(JSON.parse(saved));
     }
-  }, [user]);
+  }, []);
 
   const saveMembers = (newMembers: FamilyMember[]) => {
+    localStorage.setItem('family_members', JSON.stringify(newMembers));
     setMembers(newMembers);
-    localStorage.setItem(`family_${user?.id}`, JSON.stringify(newMembers));
   };
 
-  const addMember = () => {
-    if (!newMemberName.trim() || !newMemberAge) return;
-    
-    const newMember: FamilyMember = {
-      id: crypto.randomUUID(),
-      name: newMemberName.trim(),
-      age: parseInt(newMemberAge),
-      status: 'safe'
+  const resetForm = () => {
+    setFormData({
+      name: '',
+      relationship: '',
+      age: '',
+      phone: '',
+      address: '',
+      specialNeeds: [],
+      medicalConditions: '',
+      notes: '',
+    });
+    setEditingMember(null);
+  };
+
+  const handleOpenDialog = (member?: FamilyMember) => {
+    if (member) {
+      setEditingMember(member);
+      setFormData({
+        name: member.name,
+        relationship: member.relationship,
+        age: member.age.toString(),
+        phone: member.phone,
+        address: member.address,
+        specialNeeds: member.specialNeeds,
+        medicalConditions: member.medicalConditions,
+        notes: member.notes,
+      });
+    } else {
+      resetForm();
+    }
+    setIsDialogOpen(true);
+  };
+
+  const handleSaveMember = () => {
+    if (!formData.name || !formData.relationship) {
+      toast.error('Please fill in name and relationship');
+      return;
+    }
+
+    const memberData: FamilyMember = {
+      id: editingMember?.id || Date.now().toString(),
+      name: formData.name,
+      relationship: formData.relationship,
+      age: parseInt(formData.age) || 0,
+      phone: formData.phone,
+      address: formData.address,
+      specialNeeds: formData.specialNeeds,
+      medicalConditions: formData.medicalConditions,
+      status: editingMember?.status || 'unknown',
+      lastUpdate: new Date().toISOString(),
+      notes: formData.notes,
     };
 
-    saveMembers([...members, newMember]);
-    setNewMemberName('');
-    setNewMemberAge('');
-    setDialogOpen(false);
-    toast.success('Family member added');
+    if (editingMember) {
+      const updated = members.map(m => m.id === editingMember.id ? memberData : m);
+      saveMembers(updated);
+      toast.success('Family member updated');
+    } else {
+      saveMembers([...members, memberData]);
+      toast.success('Family member added');
+    }
+
+    setIsDialogOpen(false);
+    resetForm();
   };
 
-  const updateStatus = (id: string, status: FamilyMember['status']) => {
-    const updated = members.map(m => m.id === id ? { ...m, status } : m);
+  const handleDeleteMember = (id: string) => {
+    saveMembers(members.filter(m => m.id !== id));
+    toast.success('Family member removed');
+  };
+
+  const handleUpdateStatus = (id: string, status: FamilyMember['status']) => {
+    const updated = members.map(m => 
+      m.id === id ? { ...m, status, lastUpdate: new Date().toISOString() } : m
+    );
     saveMembers(updated);
     toast.success('Status updated');
   };
 
-  const removeMember = (id: string) => {
-    const updated = members.filter(m => m.id !== id);
-    saveMembers(updated);
-    toast.success('Member removed');
-  };
-
-  const getStatusConfig = (status: string) => {
+  const getStatusColor = (status: string) => {
     switch (status) {
-      case 'safe':
-        return { icon: CheckCircle, color: 'text-success', bg: 'bg-success/10', label: 'Safe' };
-      case 'evacuated':
-        return { icon: Users, color: 'text-info', bg: 'bg-info/10', label: 'Evacuated' };
-      case 'need_help':
-        return { icon: AlertTriangle, color: 'text-destructive', bg: 'bg-destructive/10', label: 'Need Help' };
-      default:
-        return { icon: HelpCircle, color: 'text-muted', bg: 'bg-muted', label: 'Unknown' };
+      case 'safe': return 'bg-success text-success-foreground';
+      case 'needs_help': return 'bg-destructive text-destructive-foreground';
+      default: return 'bg-muted text-muted-foreground';
     }
   };
 
-  const statusCounts = {
-    safe: members.filter(m => m.status === 'safe').length,
-    evacuated: members.filter(m => m.status === 'evacuated').length,
-    need_help: members.filter(m => m.status === 'need_help').length,
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'safe': return ShieldCheck;
+      case 'needs_help': return AlertTriangle;
+      default: return HelpCircle;
+    }
   };
 
+  const toggleSpecialNeed = (need: string) => {
+    if (formData.specialNeeds.includes(need)) {
+      setFormData({ ...formData, specialNeeds: formData.specialNeeds.filter(n => n !== need) });
+    } else {
+      setFormData({ ...formData, specialNeeds: [...formData.specialNeeds, need] });
+    }
+  };
+
+  const safeCount = members.filter(m => m.status === 'safe').length;
+  const needsHelpCount = members.filter(m => m.status === 'needs_help').length;
+  const unknownCount = members.filter(m => m.status === 'unknown').length;
+
   return (
-    <div className="space-y-4 sm:space-y-6">
-      <div className="flex items-center justify-between gap-fluid-md">
+    <div className="space-y-fluid-md">
+      <div className="flex items-center justify-between gap-fluid-md flex-wrap">
         <div className="flex items-center gap-fluid-md">
           <Link to="/resident">
             <Button variant="ghost" size="icon" className="shrink-0">
@@ -119,126 +214,161 @@ export default function FamilyStatusPage() {
           <div>
             <h1 className="font-display text-fluid-2xl font-bold flex items-center gap-2">
               <Users className="w-6 h-6 text-primary" />
-              Family Status
+              Family Safety Status
             </h1>
-            <p className="text-muted-foreground text-fluid-sm">Track your family's safety</p>
+            <p className="text-muted-foreground text-fluid-sm">Track your family members' safety during emergencies</p>
           </div>
         </div>
+        <Button onClick={() => handleOpenDialog()} className="btn-hero gap-2">
+          <Plus className="w-4 h-4" />
+          Add Family Member
+        </Button>
+      </div>
 
-        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-          <DialogTrigger asChild>
-            <Button className="gap-1 shrink-0">
-              <Plus className="w-4 h-4" />
-              <span className="hidden sm:inline">Add Member</span>
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Add Family Member</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="name">Name</Label>
-                <Input
-                  id="name"
-                  value={newMemberName}
-                  onChange={(e) => setNewMemberName(e.target.value)}
-                  placeholder="Enter name"
-                />
-              </div>
-              <div>
-                <Label htmlFor="age">Age</Label>
-                <Input
-                  id="age"
-                  type="number"
-                  value={newMemberAge}
-                  onChange={(e) => setNewMemberAge(e.target.value)}
-                  placeholder="Enter age"
-                  min={0}
-                  max={120}
-                />
-              </div>
-              <Button onClick={addMember} className="w-full">Add Member</Button>
+      <div className="grid grid-cols-3 gap-fluid-sm">
+        <Card className="stat-card text-center">
+          <CardContent className="p-fluid-sm">
+            <div className="flex items-center justify-center gap-2 mb-1">
+              <ShieldCheck className="w-5 h-5 text-success" />
+              <span className="text-fluid-xl font-bold text-success">{safeCount}</span>
             </div>
-          </DialogContent>
-        </Dialog>
+            <p className="text-fluid-xs text-muted-foreground">Safe</p>
+          </CardContent>
+        </Card>
+        <Card className="stat-card text-center">
+          <CardContent className="p-fluid-sm">
+            <div className="flex items-center justify-center gap-2 mb-1">
+              <AlertTriangle className="w-5 h-5 text-destructive" />
+              <span className="text-fluid-xl font-bold text-destructive">{needsHelpCount}</span>
+            </div>
+            <p className="text-fluid-xs text-muted-foreground">Needs Help</p>
+          </CardContent>
+        </Card>
+        <Card className="stat-card text-center">
+          <CardContent className="p-fluid-sm">
+            <div className="flex items-center justify-center gap-2 mb-1">
+              <HelpCircle className="w-5 h-5 text-muted-foreground" />
+              <span className="text-fluid-xl font-bold">{unknownCount}</span>
+            </div>
+            <p className="text-fluid-xs text-muted-foreground">Unknown</p>
+          </CardContent>
+        </Card>
       </div>
 
-      {/* Status Summary */}
-      <div className="grid grid-cols-3 gap-fluid-md">
-        {[
-          { key: 'safe', label: 'Safe', color: 'from-success to-accent' },
-          { key: 'evacuated', label: 'Evacuated', color: 'from-info to-primary' },
-          { key: 'need_help', label: 'Need Help', color: 'from-destructive to-warning' },
-        ].map((item) => (
-          <Card key={item.key} className="stat-card text-center">
-            <CardContent className="p-fluid-sm">
-              <div className={`text-fluid-2xl font-bold bg-gradient-to-r ${item.color} bg-clip-text text-transparent`}>
-                {statusCounts[item.key as keyof typeof statusCounts]}
-              </div>
-              <div className="text-fluid-xs text-muted-foreground">{item.label}</div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      {/* Members List */}
       {members.length === 0 ? (
-        <Card className="text-center py-12">
+        <Card className="dashboard-card text-center py-12">
           <CardContent>
-            <Users className="icon-box-lg mx-auto mb-4 text-muted-foreground opacity-50" />
-            <h3 className="font-semibold text-fluid-lg mb-2">No Family Members Added</h3>
-            <p className="text-fluid-sm text-muted-foreground mb-4">
+            <Users className="w-16 h-16 mx-auto text-muted-foreground/30 mb-4" />
+            <h3 className="font-display text-fluid-lg font-semibold mb-2">No Family Members Added</h3>
+            <p className="text-muted-foreground text-fluid-sm mb-6">
               Add your family members to track their safety status during emergencies
             </p>
-            <Button onClick={() => setDialogOpen(true)}>
-              <Plus className="w-4 h-4 mr-2" />
-              Add First Member
+            <Button onClick={() => handleOpenDialog()} className="btn-hero gap-2">
+              <Plus className="w-4 h-4" />
+              Add Your First Family Member
             </Button>
           </CardContent>
         </Card>
       ) : (
-        <div className="space-y-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-fluid-md">
           {members.map((member) => {
-            const statusConfig = getStatusConfig(member.status);
-            const StatusIcon = statusConfig.icon;
-
+            const StatusIcon = getStatusIcon(member.status);
             return (
-              <Card key={member.id} className="overflow-hidden">
+              <Card key={member.id} className="dashboard-card overflow-hidden">
+                <div className={`h-1 ${member.status === 'safe' ? 'bg-success' : member.status === 'needs_help' ? 'bg-destructive' : 'bg-muted'}`} />
                 <CardContent className="p-fluid-md">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-fluid-md">
-                    <div className="flex items-center gap-fluid-md">
-                      <div className={`icon-box-md rounded-full ${statusConfig.bg} flex items-center justify-center shrink-0`}>
-                        <StatusIcon className={`w-5 h-5 ${statusConfig.color}`} />
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+                        <User className="w-6 h-6 text-primary-foreground" />
                       </div>
                       <div>
-                        <p className="font-semibold text-fluid-base">{member.name}</p>
-                        <p className="text-fluid-xs text-muted-foreground">{member.age} years old</p>
+                        <h3 className="font-semibold text-fluid-base">{member.name}</h3>
+                        <p className="text-fluid-xs text-muted-foreground">
+                          {member.relationship} {member.age > 0 && `• ${member.age} years old`}
+                        </p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Select
-                        value={member.status}
-                        onValueChange={(value) => updateStatus(member.id, value as FamilyMember['status'])}
-                      >
-                        <SelectTrigger className="w-32">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="safe">✓ Safe</SelectItem>
-                          <SelectItem value="evacuated">📍 Evacuated</SelectItem>
-                          <SelectItem value="need_help">⚠ Need Help</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => removeMember(member.id)}
-                        className="text-muted-foreground hover:text-destructive shrink-0"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
+                    <Badge className={getStatusColor(member.status)}>
+                      <StatusIcon className="w-3 h-3 mr-1" />
+                      {member.status === 'safe' ? 'Safe' : member.status === 'needs_help' ? 'Needs Help' : 'Unknown'}
+                    </Badge>
+                  </div>
+
+                  <div className="space-y-2 mb-3">
+                    {member.phone && (
+                      <div className="flex items-center gap-2 text-fluid-xs">
+                        <Phone className="w-3 h-3 text-muted-foreground" />
+                        <a href={`tel:${member.phone}`} className="text-primary hover:underline">{member.phone}</a>
+                      </div>
+                    )}
+                    {member.address && (
+                      <div className="flex items-center gap-2 text-fluid-xs text-muted-foreground">
+                        <MapPin className="w-3 h-3" />
+                        <span>{member.address}</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {member.specialNeeds.length > 0 && (
+                    <div className="flex flex-wrap gap-1 mb-3">
+                      {member.specialNeeds.map((need) => (
+                        <Badge key={need} variant="outline" className="text-fluid-xs">
+                          {SPECIAL_NEEDS.find(n => n.id === need)?.label || need}
+                        </Badge>
+                      ))}
                     </div>
+                  )}
+
+                  {member.medicalConditions && (
+                    <div className="p-2 rounded-lg bg-warning/10 border border-warning/20 mb-3">
+                      <p className="text-fluid-xs text-warning-foreground">
+                        <Stethoscope className="w-3 h-3 inline mr-1" />
+                        {member.medicalConditions}
+                      </p>
+                    </div>
+                  )}
+
+                  <div className="flex items-center gap-1 text-fluid-xs text-muted-foreground mb-3">
+                    <Clock className="w-3 h-3" />
+                    <span>Updated: {new Date(member.lastUpdate).toLocaleString()}</span>
+                  </div>
+
+                  <Separator className="my-3" />
+
+                  <div className="flex flex-wrap gap-2">
+                    <Button
+                      size="sm"
+                      variant={member.status === 'safe' ? 'default' : 'outline'}
+                      className={member.status === 'safe' ? 'bg-success hover:bg-success/90' : ''}
+                      onClick={() => handleUpdateStatus(member.id, 'safe')}
+                    >
+                      <ShieldCheck className="w-3 h-3 mr-1" />
+                      Safe
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant={member.status === 'needs_help' ? 'destructive' : 'outline'}
+                      onClick={() => handleUpdateStatus(member.id, 'needs_help')}
+                    >
+                      <AlertTriangle className="w-3 h-3 mr-1" />
+                      Needs Help
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleOpenDialog(member)}
+                    >
+                      <Edit2 className="w-3 h-3" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="text-destructive hover:text-destructive"
+                      onClick={() => handleDeleteMember(member.id)}
+                    >
+                      <Trash2 className="w-3 h-3" />
+                    </Button>
                   </div>
                 </CardContent>
               </Card>
@@ -246,6 +376,133 @@ export default function FamilyStatusPage() {
           })}
         </div>
       )}
+
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="font-display flex items-center gap-2">
+              <Users className="w-5 h-5 text-primary" />
+              {editingMember ? 'Edit Family Member' : 'Add Family Member'}
+            </DialogTitle>
+            <DialogDescription>
+              Enter information about your family member for emergency tracking
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 py-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="name">Full Name *</Label>
+                <Input
+                  id="name"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  placeholder="Enter full name"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="relationship">Relationship *</Label>
+                <Select 
+                  value={formData.relationship} 
+                  onValueChange={(v) => setFormData({ ...formData, relationship: v })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select relationship" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {RELATIONSHIPS.map((rel) => (
+                      <SelectItem key={rel} value={rel}>{rel}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="age">Age</Label>
+                <Input
+                  id="age"
+                  type="number"
+                  value={formData.age}
+                  onChange={(e) => setFormData({ ...formData, age: e.target.value })}
+                  placeholder="Enter age"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="phone">Phone Number</Label>
+                <Input
+                  id="phone"
+                  type="tel"
+                  value={formData.phone}
+                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  placeholder="e.g., 09123456789"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="address">Address / Location</Label>
+              <Input
+                id="address"
+                value={formData.address}
+                onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                placeholder="e.g., Purok 3, Brgy. Catmon"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label>Special Needs</Label>
+              <div className="grid grid-cols-2 gap-2">
+                {SPECIAL_NEEDS.map((need) => {
+                  const isSelected = formData.specialNeeds.includes(need.id);
+                  return (
+                    <div
+                      key={need.id}
+                      onClick={() => toggleSpecialNeed(need.id)}
+                      className={`flex items-center gap-2 p-3 rounded-lg border cursor-pointer transition-all ${isSelected ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/30'}`}
+                    >
+                      <need.icon className={`w-4 h-4 ${isSelected ? 'text-primary' : 'text-muted-foreground'}`} />
+                      <span className="text-sm">{need.label}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="medical">Medical Conditions</Label>
+              <Textarea
+                id="medical"
+                value={formData.medicalConditions}
+                onChange={(e) => setFormData({ ...formData, medicalConditions: e.target.value })}
+                placeholder="List any important medical conditions..."
+                rows={2}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="notes">Additional Notes</Label>
+              <Textarea
+                id="notes"
+                value={formData.notes}
+                onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                placeholder="Any other important information..."
+                rows={2}
+              />
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleSaveMember} className="btn-hero">
+              {editingMember ? 'Save Changes' : 'Add Member'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
