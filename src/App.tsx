@@ -35,9 +35,15 @@ import AdminDashboard from "./pages/admin/AdminDashboard";
 import AlertsManagement from "./pages/admin/AlertsManagement";
 import RequestsManagement from "./pages/admin/RequestsManagement";
 import CentersManagement from "./pages/admin/CentersManagement";
+import RescuersManagement from "./pages/admin/RescuersManagement";
+import InventoryManagement from "./pages/admin/InventoryManagement";
+import AnalyticsDashboard from "./pages/admin/AnalyticsDashboard";
 
 // Official Pages
 import OfficialDashboard from "./pages/official/OfficialDashboard";
+import EvacueesManagement from "./pages/official/EvacueesManagement";
+import SuppliesManagement from "./pages/official/SuppliesManagement";
+import HouseholdMapView from "./pages/official/HouseholdMapView";
 
 const queryClient = new QueryClient();
 
@@ -79,12 +85,12 @@ const App = () => (
             <Route path="/admin" element={<DashboardLayout />}>
               <Route index element={<AdminDashboard />} />
               <Route path="requests" element={<RequestsManagement />} />
-              <Route path="rescuers" element={<AdminDashboard />} />
+              <Route path="rescuers" element={<RescuersManagement />} />
               <Route path="alerts" element={<AlertsManagement />} />
               <Route path="centers" element={<CentersManagement />} />
-              <Route path="inventory" element={<AdminDashboard />} />
+              <Route path="inventory" element={<InventoryManagement />} />
               <Route path="map" element={<FloodMap />} />
-              <Route path="analytics" element={<AdminDashboard />} />
+              <Route path="analytics" element={<AnalyticsDashboard />} />
               <Route path="profile" element={<ProfilePage />} />
             </Route>
 
@@ -92,10 +98,10 @@ const App = () => (
             <Route path="/official" element={<DashboardLayout />}>
               <Route index element={<OfficialDashboard />} />
               <Route path="center" element={<OfficialDashboard />} />
-              <Route path="evacuees" element={<OfficialDashboard />} />
-              <Route path="supplies" element={<OfficialDashboard />} />
+              <Route path="evacuees" element={<EvacueesManagement />} />
+              <Route path="supplies" element={<SuppliesManagement />} />
               <Route path="alerts" element={<AlertsPage />} />
-              <Route path="zone" element={<FloodMap />} />
+              <Route path="zone" element={<HouseholdMapView />} />
               <Route path="contact" element={<OfficialDashboard />} />
               <Route path="profile" element={<ProfilePage />} />
             </Route>
