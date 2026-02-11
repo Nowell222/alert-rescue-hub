@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, Circle, useMap, LayersControl, useMapEvents } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, Circle, useMap, LayersControl, LayerGroup, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Button } from '@/components/ui/button';
@@ -172,7 +172,7 @@ export default function InteractiveMap({
 
           {/* Overlay Layers */}
           <LayersControl.Overlay checked name="Flood Zones">
-            <>
+            <LayerGroup>
               {floodZones.map((zone) => (
                 <Circle
                   key={zone.id}
@@ -196,7 +196,7 @@ export default function InteractiveMap({
                   </Popup>
                 </Circle>
               ))}
-            </>
+            </LayerGroup>
           </LayersControl.Overlay>
         </LayersControl>
 
