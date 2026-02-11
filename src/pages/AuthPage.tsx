@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -42,7 +43,26 @@ export default function AuthPage() {
       setError(error.message);
       setLoading(false);
     } else {
-      navigate('/resident');
+      // Fetch user role to redirect to correct dashboard
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data: roleData } = await supabase
+          .from('user_roles')
+          .select('role')
+          .eq('user_id', user.id)
+          .single();
+        
+        const role = roleData?.role || 'resident';
+        const roleRoutes: Record<string, string> = {
+          resident: '/resident',
+          rescuer: '/rescuer',
+          mdrrmo_admin: '/admin',
+          barangay_official: '/official',
+        };
+        navigate(roleRoutes[role] || '/resident');
+      } else {
+        navigate('/resident');
+      }
     }
   };
 
