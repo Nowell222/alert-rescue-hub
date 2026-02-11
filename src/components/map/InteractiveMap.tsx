@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, Circle, useMap, LayersControl, LayerGroup, useMapEvents } from 'react-leaflet';
+import { useState } from 'react';
+import { MapContainer, TileLayer, Marker, Popup, Circle, useMap, LayerGroup, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Button } from '@/components/ui/button';
@@ -69,7 +69,6 @@ interface InteractiveMapProps {
   className?: string;
 }
 
-// Component to handle map click events
 function MapClickHandler({ onClick }: { onClick?: (lat: number, lng: number) => void }) {
   useMapEvents({
     click: (e) => {
@@ -81,7 +80,6 @@ function MapClickHandler({ onClick }: { onClick?: (lat: number, lng: number) => 
   return null;
 }
 
-// Component to locate user
 function LocateControl({ userLocation }: { userLocation?: { lat: number; lng: number } | null }) {
   const map = useMap();
   
@@ -94,7 +92,7 @@ function LocateControl({ userLocation }: { userLocation?: { lat: number; lng: nu
   };
   
   return (
-    <div className="absolute top-4 right-4 z-[1000]">
+    <div className="absolute top-4 right-16 z-[1000]">
       <Button
         variant="secondary"
         size="icon"
@@ -107,7 +105,23 @@ function LocateControl({ userLocation }: { userLocation?: { lat: number; lng: nu
   );
 }
 
-// Get flood zone color based on risk level
+type BaseLayer = 'street' | 'satellite' | 'terrain';
+
+const tileUrls: Record<BaseLayer, { url: string; attribution: string }> = {
+  street: {
+    url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+  },
+  satellite: {
+    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    attribution: '&copy; <a href="https://www.esri.com">Esri</a>',
+  },
+  terrain: {
+    url: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+  },
+};
+
 function getFloodZoneColor(riskLevel: string): string {
   switch (riskLevel) {
     case 'critical': return '#ef4444';
@@ -117,7 +131,6 @@ function getFloodZoneColor(riskLevel: string): string {
   }
 }
 
-// Get marker icon based on type
 function getMarkerIcon(type: string): L.DivIcon {
   switch (type) {
     case 'sos': return sosIcon;
@@ -128,8 +141,46 @@ function getMarkerIcon(type: string): L.DivIcon {
   }
 }
 
+// Layer switcher rendered as HTML overlay (not a react-leaflet component)
+function LayerSwitcher({ activeLayer, onChange }: { activeLayer: BaseLayer; onChange: (l: BaseLayer) => void }) {
+  const [open, setOpen] = useState(false);
+  const layers: { key: BaseLayer; label: string }[] = [
+    { key: 'street', label: 'Street' },
+    { key: 'satellite', label: 'Satellite' },
+    { key: 'terrain', label: 'Terrain' },
+  ];
+
+  return (
+    <div className="absolute top-4 right-4 z-[1000]">
+      <Button
+        variant="secondary"
+        size="icon"
+        onClick={() => setOpen(!open)}
+        className="shadow-lg bg-white hover:bg-gray-100"
+      >
+        <Layers className="w-4 h-4 text-gray-700" />
+      </Button>
+      {open && (
+        <div className="mt-1 bg-white rounded-lg shadow-lg border p-1 min-w-[120px]">
+          {layers.map((l) => (
+            <button
+              key={l.key}
+              onClick={() => { onChange(l.key); setOpen(false); }}
+              className={`block w-full text-left px-3 py-1.5 text-sm rounded ${
+                activeLayer === l.key ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'
+              }`}
+            >
+              {l.label}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function InteractiveMap({
-  center = [13.8263, 121.3960], // Default: San Juan, Batangas
+  center = [13.8263, 121.3960],
   zoom = 14,
   markers = [],
   floodZones = [],
@@ -139,6 +190,9 @@ export default function InteractiveMap({
   height = '400px',
   className = '',
 }: InteractiveMapProps) {
+  const [baseLayer, setBaseLayer] = useState<BaseLayer>('street');
+  const tile = tileUrls[baseLayer];
+
   return (
     <div className={`relative rounded-lg overflow-hidden border border-border ${className}`} style={{ height }}>
       <MapContainer
@@ -147,58 +201,34 @@ export default function InteractiveMap({
         style={{ height: '100%', width: '100%' }}
         className="z-0"
       >
-        <LayersControl position="topright">
-          {/* Base Layers */}
-          <LayersControl.BaseLayer checked name="Street Map">
-            <TileLayer
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            />
-          </LayersControl.BaseLayer>
-          
-          <LayersControl.BaseLayer name="Satellite">
-            <TileLayer
-              attribution='&copy; <a href="https://www.esri.com">Esri</a>'
-              url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
-            />
-          </LayersControl.BaseLayer>
-          
-          <LayersControl.BaseLayer name="Terrain">
-            <TileLayer
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-              url="https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png"
-            />
-          </LayersControl.BaseLayer>
+        <TileLayer key={baseLayer} attribution={tile.attribution} url={tile.url} />
 
-          {/* Overlay Layers */}
-          <LayersControl.Overlay checked name="Flood Zones">
-            <LayerGroup>
-              {floodZones.map((zone) => (
-                <Circle
-                  key={zone.id}
-                  center={[zone.lat, zone.lng]}
-                  radius={zone.radius}
-                  pathOptions={{
-                    color: getFloodZoneColor(zone.riskLevel),
-                    fillColor: getFloodZoneColor(zone.riskLevel),
-                    fillOpacity: 0.3,
-                    weight: 2,
-                  }}
-                >
-                  <Popup>
-                    <div className="p-1">
-                      <h4 className="font-semibold text-sm">{zone.name}</h4>
-                      <p className="text-xs text-gray-600">Risk Level: {zone.riskLevel}</p>
-                      {zone.waterLevel !== undefined && (
-                        <p className="text-xs text-gray-600">Water Level: {zone.waterLevel}cm</p>
-                      )}
-                    </div>
-                  </Popup>
-                </Circle>
-              ))}
-            </LayerGroup>
-          </LayersControl.Overlay>
-        </LayersControl>
+        {/* Flood Zones */}
+        <LayerGroup>
+          {floodZones.map((zone) => (
+            <Circle
+              key={zone.id}
+              center={[zone.lat, zone.lng]}
+              radius={zone.radius}
+              pathOptions={{
+                color: getFloodZoneColor(zone.riskLevel),
+                fillColor: getFloodZoneColor(zone.riskLevel),
+                fillOpacity: 0.3,
+                weight: 2,
+              }}
+            >
+              <Popup>
+                <div className="p-1">
+                  <h4 className="font-semibold text-sm">{zone.name}</h4>
+                  <p className="text-xs text-gray-600">Risk Level: {zone.riskLevel}</p>
+                  {zone.waterLevel !== undefined && (
+                    <p className="text-xs text-gray-600">Water Level: {zone.waterLevel}cm</p>
+                  )}
+                </div>
+              </Popup>
+            </Circle>
+          ))}
+        </LayerGroup>
 
         {/* Markers */}
         {markers.map((marker) => (
@@ -244,6 +274,7 @@ export default function InteractiveMap({
         <MapClickHandler onClick={onMapClick} />
         <LocateControl userLocation={userLocation} />
       </MapContainer>
+      <LayerSwitcher activeLayer={baseLayer} onChange={setBaseLayer} />
     </div>
   );
 }
