@@ -65,6 +65,8 @@ const roleNavItems: Record<AppRole, NavItem[]> = {
     { icon: Bell, label: 'Alerts', href: '/admin/alerts' },
     { icon: Building2, label: 'Evacuation Centers', href: '/admin/centers' },
     { icon: Package, label: 'Inventory', href: '/admin/inventory' },
+    { icon: ClipboardList, label: 'Registered Residents', href: '/admin/residents' },
+    { icon: MapPin, label: "Residents' Map", href: '/admin/residents-map' },
     { icon: MapPin, label: 'Flood Map', href: '/admin/map' },
     { icon: BarChart3, label: 'Analytics', href: '/admin/analytics' },
   ],

@@ -91,6 +91,8 @@ const App = () => (
               <Route path="alerts" element={<AlertsManagement />} />
               <Route path="centers" element={<CentersManagement />} />
               <Route path="inventory" element={<InventoryManagement />} />
+              <Route path="residents" element={<RegisteredResidents />} />
+              <Route path="residents-map" element={<ResidentsMap />} />
               <Route path="map" element={<FloodMap />} />
               <Route path="analytics" element={<AnalyticsDashboard />} />
               <Route path="profile" element={<ProfilePage />} />
