@@ -44,6 +44,8 @@ import OfficialDashboard from "./pages/official/OfficialDashboard";
 import EvacueesManagement from "./pages/official/EvacueesManagement";
 import SuppliesManagement from "./pages/official/SuppliesManagement";
 import HouseholdMapView from "./pages/official/HouseholdMapView";
+import RegisteredResidents from "./pages/official/RegisteredResidents";
+import ResidentsMap from "./pages/official/ResidentsMap";
 
 const queryClient = new QueryClient();
 
@@ -99,6 +101,8 @@ const App = () => (
               <Route index element={<OfficialDashboard />} />
               <Route path="center" element={<OfficialDashboard />} />
               <Route path="evacuees" element={<EvacueesManagement />} />
+              <Route path="residents" element={<RegisteredResidents />} />
+              <Route path="residents-map" element={<ResidentsMap />} />
               <Route path="supplies" element={<SuppliesManagement />} />
               <Route path="alerts" element={<AlertsPage />} />
               <Route path="zone" element={<HouseholdMapView />} />

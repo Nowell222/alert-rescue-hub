@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useLocationTracker } from '@/hooks/useLocationTracker';
 import { Outlet, useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
@@ -71,9 +72,11 @@ const roleNavItems: Record<AppRole, NavItem[]> = {
     { icon: Home, label: 'Dashboard', href: '/official' },
     { icon: Building2, label: 'Evacuation Center', href: '/official/center' },
     { icon: Users, label: 'Evacuees', href: '/official/evacuees' },
+    { icon: ClipboardList, label: 'Registered Residents', href: '/official/residents' },
+    { icon: MapPin, label: "Residents' Map", href: '/official/residents-map' },
     { icon: Package, label: 'Supplies', href: '/official/supplies' },
     { icon: Bell, label: 'Alerts', href: '/official/alerts' },
-    { icon: MapPin, label: 'Zone Status', href: '/official/zone' },
+    { icon: Shield, label: 'Zone Status', href: '/official/zone' },
   ],
 };
 
@@ -90,6 +93,9 @@ export default function DashboardLayout() {
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+
+  // Track user location while they're actively using the app
+  useLocationTracker();
 
   useEffect(() => {
     const checkMobile = () => {
