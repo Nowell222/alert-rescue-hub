@@ -74,8 +74,8 @@ export default function FloodMapPage() {
   // Convert data for map
   const mapMarkers = centers.map(center => ({
     id: center.id,
-    lat: center.location_lat || 13.8263,
-    lng: center.location_lng || 121.3960,
+    lat: center.location_lat || 13.8240,
+    lng: center.location_lng || 121.3945,
     type: 'evacuation' as const,
     title: center.name,
     description: `Capacity: ${center.current_occupancy}/${center.max_capacity}`,
@@ -85,8 +85,8 @@ export default function FloodMapPage() {
   const mapFloodZones = zones.map(zone => ({
     id: zone.id,
     name: zone.zone_name,
-    lat: 13.8263 + (Math.random() - 0.5) * 0.02, // Simulate positions
-    lng: 121.3960 + (Math.random() - 0.5) * 0.02,
+    lat: 13.8240 + (Math.random() - 0.5) * 0.02,
+    lng: 121.3945 + (Math.random() - 0.5) * 0.02,
     radius: 200 + Math.random() * 300,
     riskLevel: zone.risk_level.toLowerCase() as 'low' | 'moderate' | 'high' | 'critical',
     waterLevel: zone.current_water_level
@@ -266,9 +266,18 @@ export default function FloodMapPage() {
                       <Badge variant="outline" className="text-fluid-xs">
                         {center.status || 'operational'}
                       </Badge>
-                      <Button size="sm" variant="outline" className="gap-1 text-fluid-xs">
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        className="gap-1 text-fluid-xs"
+                        onClick={() => {
+                          const lat = center.location_lat || 13.8240;
+                          const lng = center.location_lng || 121.3945;
+                          window.open(`https://waze.com/ul?ll=${lat},${lng}&navigate=yes`, '_blank');
+                        }}
+                      >
                         <Navigation className="w-3 h-3" />
-                        Get Directions
+                        Navigate via Waze
                       </Button>
                     </div>
                   </div>

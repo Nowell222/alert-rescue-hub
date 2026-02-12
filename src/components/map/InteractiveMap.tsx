@@ -180,8 +180,8 @@ function LayerSwitcher({ activeLayer, onChange }: { activeLayer: BaseLayer; onCh
 }
 
 export default function InteractiveMap({
-  center = [13.8263, 121.3960],
-  zoom = 14,
+  center = [13.8240, 121.3945],
+  zoom = 15,
   markers = [],
   floodZones = [],
   userLocation,

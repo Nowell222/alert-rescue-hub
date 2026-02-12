@@ -57,8 +57,8 @@ export default function HouseholdMapViewPage() {
   const mapMarkers = [
     ...centers.map(c => ({
       id: c.id,
-      lat: c.location_lat || 13.8263,
-      lng: c.location_lng || 121.3960,
+      lat: c.location_lat || 13.8240,
+      lng: c.location_lng || 121.3945,
       type: 'evacuation' as const,
       title: c.name,
       description: `${c.current_occupancy}/${c.max_capacity} capacity`,
@@ -79,8 +79,8 @@ export default function HouseholdMapViewPage() {
     }),
     ...profiles.filter(p => p.address).map((p, i) => ({
       id: `household-${p.id}`,
-      lat: 13.8263 + (Math.sin(i * 1.7) * 0.008),
-      lng: 121.3960 + (Math.cos(i * 1.7) * 0.008),
+      lat: 13.8240 + (Math.sin(i * 1.7) * 0.008),
+      lng: 121.3945 + (Math.cos(i * 1.7) * 0.008),
       type: 'household' as const,
       title: p.full_name,
       description: p.address || 'No address',
@@ -90,8 +90,8 @@ export default function HouseholdMapViewPage() {
   const mapFloodZones = zones.map(zone => ({
     id: zone.id,
     name: zone.zone_name,
-    lat: 13.8263 + (Math.random() - 0.5) * 0.02,
-    lng: 121.3960 + (Math.random() - 0.5) * 0.02,
+    lat: 13.8240 + (Math.random() - 0.5) * 0.02,
+    lng: 121.3945 + (Math.random() - 0.5) * 0.02,
     radius: 200 + Math.random() * 300,
     riskLevel: zone.risk_level.toLowerCase() as 'low' | 'moderate' | 'high' | 'critical',
     waterLevel: zone.current_water_level,

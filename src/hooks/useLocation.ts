@@ -10,8 +10,8 @@ interface LocationState {
 }
 
 const DEFAULT_LOCATION = {
-  latitude: 13.8263,
-  longitude: 121.3960
+  latitude: 13.8240,
+  longitude: 121.3945
 };
 
 export function useLocation(enableTracking = false) {
