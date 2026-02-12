@@ -7,7 +7,6 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import InteractiveMap from '@/components/map/InteractiveMap';
-import type { RouteInfo } from '@/components/map/RouteLine';
 import { useLocation as useGeoLocation } from '@/hooks/useLocation';
 import {
   ArrowLeft,
@@ -36,7 +35,7 @@ export default function MissionsPage() {
   const [missions, setMissions] = useState<MissionWithProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [processingId, setProcessingId] = useState<string | null>(null);
-  const [activeRoute, setActiveRoute] = useState<RouteInfo | null>(null);
+  const [activeRoute, setActiveRoute] = useState<{ lat: number; lng: number; label: string } | null>(null);
   const geoLocation = useGeoLocation(true);
 
   useEffect(() => {
@@ -194,7 +193,10 @@ export default function MissionsPage() {
           <InteractiveMap
             markers={mapMarkers}
             height="300px"
-            route={activeRoute}
+            route={activeRoute && geoLocation.hasLocation ? {
+              from: { lat: geoLocation.latitude!, lng: geoLocation.longitude!, label: 'Your Location' },
+              to: activeRoute,
+            } : null}
             userLocation={geoLocation.hasLocation ? { lat: geoLocation.latitude!, lng: geoLocation.longitude! } : null}
           />
         </CardContent>
@@ -261,10 +263,10 @@ export default function MissionsPage() {
                     variant="outline"
                     className="flex-1 gap-1"
                     onClick={() => {
-                      if (mission.location_lat && mission.location_lng && geoLocation.hasLocation) {
+                      if (mission.location_lat && mission.location_lng) {
                         setActiveRoute({
-                          from: { lat: geoLocation.latitude!, lng: geoLocation.longitude!, label: 'Your Location' },
-                          to: { lat: mission.location_lat, lng: mission.location_lng, label: mission.requester_profile?.full_name || 'Rescuee' },
+                          lat: mission.location_lat, lng: mission.location_lng,
+                          label: mission.requester_profile?.full_name || 'Rescuee',
                         });
                       }
                     }}
