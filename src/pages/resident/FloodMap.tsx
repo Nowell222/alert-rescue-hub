@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { useLocation } from '@/hooks/useLocation';
 import InteractiveMap from '@/components/map/InteractiveMap';
+import type { RouteInfo } from '@/components/map/RouteLine';
 import {
   ArrowLeft,
   MapPin,
@@ -23,6 +24,7 @@ export default function FloodMapPage() {
   const [zones, setZones] = useState<FloodZone[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [activeRoute, setActiveRoute] = useState<RouteInfo | null>(null);
   const location = useLocation(true);
 
   useEffect(() => {
@@ -179,6 +181,7 @@ export default function FloodMapPage() {
             floodZones={mapFloodZones}
             userLocation={location.hasLocation ? { lat: location.latitude!, lng: location.longitude! } : null}
             height="400px"
+            route={activeRoute}
           />
         )}
       </Card>
@@ -273,11 +276,16 @@ export default function FloodMapPage() {
                         onClick={() => {
                           const lat = center.location_lat || 13.8240;
                           const lng = center.location_lng || 121.3945;
-                          window.open(`https://waze.com/ul?ll=${lat},${lng}&navigate=yes`, '_blank');
+                          if (location.hasLocation) {
+                            setActiveRoute({
+                              from: { lat: location.latitude!, lng: location.longitude!, label: 'Your Location' },
+                              to: { lat, lng, label: center.name },
+                            });
+                          }
                         }}
                       >
                         <Navigation className="w-3 h-3" />
-                        Navigate via Waze
+                        Get Directions
                       </Button>
                     </div>
                   </div>

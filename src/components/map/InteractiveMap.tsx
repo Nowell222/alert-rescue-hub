@@ -4,6 +4,7 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Button } from '@/components/ui/button';
 import { Locate, Layers } from 'lucide-react';
+import RouteLine, { type RouteInfo } from './RouteLine';
 
 // Fix Leaflet default markers
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -67,6 +68,7 @@ interface InteractiveMapProps {
   showUserLocation?: boolean;
   height?: string;
   className?: string;
+  route?: RouteInfo | null;
 }
 
 function MapClickHandler({ onClick }: { onClick?: (lat: number, lng: number) => void }) {
@@ -189,6 +191,7 @@ export default function InteractiveMap({
   showUserLocation = true,
   height = '400px',
   className = '',
+  route = null,
 }: InteractiveMapProps) {
   const [baseLayer, setBaseLayer] = useState<BaseLayer>('street');
   const tile = tileUrls[baseLayer];
@@ -273,6 +276,7 @@ export default function InteractiveMap({
 
         <MapClickHandler onClick={onMapClick} />
         <LocateControl userLocation={userLocation} />
+        {route && <RouteLine route={route} />}
       </MapContainer>
       <LayerSwitcher activeLayer={baseLayer} onChange={setBaseLayer} />
     </div>

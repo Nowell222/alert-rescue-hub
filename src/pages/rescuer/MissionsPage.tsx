@@ -7,6 +7,8 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import InteractiveMap from '@/components/map/InteractiveMap';
+import type { RouteInfo } from '@/components/map/RouteLine';
+import { useLocation as useGeoLocation } from '@/hooks/useLocation';
 import {
   ArrowLeft,
   Radio,
@@ -34,6 +36,8 @@ export default function MissionsPage() {
   const [missions, setMissions] = useState<MissionWithProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [processingId, setProcessingId] = useState<string | null>(null);
+  const [activeRoute, setActiveRoute] = useState<RouteInfo | null>(null);
+  const geoLocation = useGeoLocation(true);
 
   useEffect(() => {
     fetchMissions();
@@ -187,7 +191,12 @@ export default function MissionsPage() {
           </CardTitle>
         </CardHeader>
         <CardContent className="p-0">
-          <InteractiveMap markers={mapMarkers} height="300px" />
+          <InteractiveMap
+            markers={mapMarkers}
+            height="300px"
+            route={activeRoute}
+            userLocation={geoLocation.hasLocation ? { lat: geoLocation.latitude!, lng: geoLocation.longitude! } : null}
+          />
         </CardContent>
       </Card>
 
@@ -252,13 +261,16 @@ export default function MissionsPage() {
                     variant="outline"
                     className="flex-1 gap-1"
                     onClick={() => {
-                      if (mission.location_lat && mission.location_lng) {
-                        window.open(`https://waze.com/ul?ll=${mission.location_lat},${mission.location_lng}&navigate=yes`, '_blank');
+                      if (mission.location_lat && mission.location_lng && geoLocation.hasLocation) {
+                        setActiveRoute({
+                          from: { lat: geoLocation.latitude!, lng: geoLocation.longitude!, label: 'Your Location' },
+                          to: { lat: mission.location_lat, lng: mission.location_lng, label: mission.requester_profile?.full_name || 'Rescuee' },
+                        });
                       }
                     }}
                   >
                     <Navigation className="w-3 h-3" />
-                    Navigate via Waze
+                    Show Route
                   </Button>
                   {mission.status === 'assigned' && (
                     <Button size="sm" className="flex-1 btn-hero gap-1" onClick={() => handleStartMission(mission.id)} disabled={processingId === mission.id}>
