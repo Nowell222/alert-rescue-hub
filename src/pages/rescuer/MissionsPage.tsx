@@ -253,12 +253,12 @@ export default function MissionsPage() {
                     className="flex-1 gap-1"
                     onClick={() => {
                       if (mission.location_lat && mission.location_lng) {
-                        window.open(`https://www.google.com/maps/dir/?api=1&destination=${mission.location_lat},${mission.location_lng}`, '_blank');
+                        window.open(`https://waze.com/ul?ll=${mission.location_lat},${mission.location_lng}&navigate=yes`, '_blank');
                       }
                     }}
                   >
                     <Navigation className="w-3 h-3" />
-                    Navigate
+                    Navigate via Waze
                   </Button>
                   {mission.status === 'assigned' && (
                     <Button size="sm" className="flex-1 btn-hero gap-1" onClick={() => handleStartMission(mission.id)} disabled={processingId === mission.id}>

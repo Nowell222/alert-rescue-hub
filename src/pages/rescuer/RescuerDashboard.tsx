@@ -213,12 +213,18 @@ export default function RescuerDashboard() {
                       </div>
                     </div>
                     <div className="flex gap-2">
-                      <Link to="/rescuer/map">
-                        <Button size="sm" className="gap-2">
-                          <Navigation className="w-4 h-4" />
-                          Navigate
-                        </Button>
-                      </Link>
+                      <Button 
+                        size="sm" 
+                        className="gap-2"
+                        onClick={() => {
+                          if (mission.location_lat && mission.location_lng) {
+                            window.open(`https://waze.com/ul?ll=${mission.location_lat},${mission.location_lng}&navigate=yes`, '_blank');
+                          }
+                        }}
+                      >
+                        <Navigation className="w-4 h-4" />
+                        Navigate via Waze
+                      </Button>
                     </div>
                   </div>
                 </div>
