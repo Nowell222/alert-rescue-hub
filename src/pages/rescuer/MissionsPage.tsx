@@ -193,8 +193,12 @@ export default function MissionsPage() {
           <InteractiveMap
             markers={mapMarkers}
             height="300px"
-            route={activeRoute && geoLocation.hasLocation ? {
-              from: { lat: geoLocation.latitude!, lng: geoLocation.longitude!, label: 'Your Location' },
+            route={activeRoute ? {
+              from: {
+                lat: geoLocation.hasLocation ? geoLocation.latitude! : 13.8240,
+                lng: geoLocation.hasLocation ? geoLocation.longitude! : 121.3945,
+                label: 'Your Location',
+              },
               to: activeRoute,
             } : null}
             userLocation={geoLocation.hasLocation ? { lat: geoLocation.latitude!, lng: geoLocation.longitude! } : null}

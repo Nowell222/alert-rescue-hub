@@ -144,6 +144,9 @@ export type Database = {
           created_at: string
           full_name: string
           id: string
+          last_active_at: string | null
+          last_known_lat: number | null
+          last_known_lng: number | null
           phone_number: string | null
           updated_at: string
           user_id: string
@@ -155,6 +158,9 @@ export type Database = {
           created_at?: string
           full_name: string
           id?: string
+          last_active_at?: string | null
+          last_known_lat?: number | null
+          last_known_lng?: number | null
           phone_number?: string | null
           updated_at?: string
           user_id: string
@@ -166,6 +172,9 @@ export type Database = {
           created_at?: string
           full_name?: string
           id?: string
+          last_active_at?: string | null
+          last_known_lat?: number | null
+          last_known_lng?: number | null
           phone_number?: string | null
           updated_at?: string
           user_id?: string

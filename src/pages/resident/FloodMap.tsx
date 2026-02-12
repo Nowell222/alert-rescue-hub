@@ -180,8 +180,12 @@ export default function FloodMapPage() {
             floodZones={mapFloodZones}
             userLocation={location.hasLocation ? { lat: location.latitude!, lng: location.longitude! } : null}
             height="400px"
-            route={activeRoute && location.hasLocation ? {
-              from: { lat: location.latitude!, lng: location.longitude!, label: 'Your Location' },
+            route={activeRoute ? {
+              from: {
+                lat: location.hasLocation ? location.latitude! : 13.8240,
+                lng: location.hasLocation ? location.longitude! : 121.3945,
+                label: 'Your Location',
+              },
               to: activeRoute,
             } : null}
           />
