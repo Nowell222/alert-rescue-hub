@@ -58,14 +58,10 @@ export default function EmergencySOSPage() {
   const [error, setError] = useState<string | null>(null);
   const [currentAlert, setCurrentAlert] = useState<WeatherAlert | null>(null);
 
-  // Pre-fill address from profile
   useEffect(() => {
-    if (profile?.address) {
-      setAddress(profile.address);
-    }
+    if (profile?.address) setAddress(profile.address);
   }, [profile]);
 
-  // Fetch current alert level
   useEffect(() => {
     const fetchAlerts = async () => {
       const { data } = await supabase
@@ -74,113 +70,70 @@ export default function EmergencySOSPage() {
         .eq('is_active', true)
         .order('created_at', { ascending: false })
         .limit(1);
-      
-      if (data && data.length > 0) {
-        setCurrentAlert(data[0] as WeatherAlert);
-      }
+      if (data && data.length > 0) setCurrentAlert(data[0] as WeatherAlert);
     };
     fetchAlerts();
   }, []);
 
   const handleSpecialNeedChange = (id: string, checked: boolean) => {
-    if (checked) {
-      setSpecialNeeds([...specialNeeds, id]);
-    } else {
-      setSpecialNeeds(specialNeeds.filter(n => n !== id));
-    }
+    if (checked) setSpecialNeeds([...specialNeeds, id]);
+    else setSpecialNeeds(specialNeeds.filter(n => n !== id));
   };
 
   const calculatePriority = (isQuickSOS: boolean) => {
     let score = 50;
-    
-    if (isQuickSOS) {
-      score = 90; // Quick SOS = critical by default
-    } else {
+    if (isQuickSOS) { score = 90; }
+    else {
       if (severity === 'critical') score += 40;
       else if (severity === 'high') score += 25;
       else score += 10;
-      
       score += Math.min(householdCount * 3, 15);
       score += specialNeeds.length * 5;
     }
-
-    // Add priority based on current alert level
     if (currentAlert?.priority === 'critical') score += 10;
     else if (currentAlert?.priority === 'warning') score += 5;
-
     return Math.min(score, 100);
   };
 
   const handleQuickSOS = async () => {
-    if (!user) {
-      setError('You must be logged in to submit a request');
-      return;
-    }
-
+    if (!user) { setError('You must be logged in to submit a request'); return; }
     setLoading(true);
     setError(null);
-
     try {
-      const { error: submitError } = await supabase
-        .from('rescue_requests')
-        .insert({
-          requester_id: user.id,
-          severity: 'critical',
-          household_count: 1,
-          special_needs: null,
-          situation_description: `QUICK SOS - Immediate assistance needed. Alert Level: ${currentAlert?.priority || 'unknown'}`,
-          location_lat: location.latitude,
-          location_lng: location.longitude,
-          location_address: profile?.address || address || null,
-          priority_score: calculatePriority(true)
-        });
-
+      const { error: submitError } = await supabase.from('rescue_requests').insert({
+        requester_id: user.id, severity: 'critical', household_count: 1,
+        special_needs: null,
+        situation_description: `QUICK SOS - Immediate assistance needed. Alert Level: ${currentAlert?.priority || 'unknown'}`,
+        location_lat: location.latitude, location_lng: location.longitude,
+        location_address: profile?.address || address || null,
+        priority_score: calculatePriority(true)
+      });
       if (submitError) throw submitError;
-
       setSuccess(true);
       setTimeout(() => navigate('/resident/requests'), 2000);
-    } catch (err: any) {
-      setError(err.message || 'Failed to submit request');
-    } finally {
-      setLoading(false);
-    }
+    } catch (err: any) { setError(err.message || 'Failed to submit request'); }
+    finally { setLoading(false); }
   };
 
   const handleDetailedSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!user) {
-      setError('You must be logged in to submit a request');
-      return;
-    }
-
+    if (!user) { setError('You must be logged in to submit a request'); return; }
     setLoading(true);
     setError(null);
-
     try {
-      const { error: submitError } = await supabase
-        .from('rescue_requests')
-        .insert({
-          requester_id: user.id,
-          severity,
-          household_count: householdCount,
-          special_needs: specialNeeds.length > 0 ? specialNeeds : null,
-          situation_description: description || null,
-          location_lat: location.latitude,
-          location_lng: location.longitude,
-          location_address: address || null,
-          priority_score: calculatePriority(false)
-        });
-
+      const { error: submitError } = await supabase.from('rescue_requests').insert({
+        requester_id: user.id, severity, household_count: householdCount,
+        special_needs: specialNeeds.length > 0 ? specialNeeds : null,
+        situation_description: description || null,
+        location_lat: location.latitude, location_lng: location.longitude,
+        location_address: address || null,
+        priority_score: calculatePriority(false)
+      });
       if (submitError) throw submitError;
-
       setSuccess(true);
       setTimeout(() => navigate('/resident/requests'), 2000);
-    } catch (err: any) {
-      setError(err.message || 'Failed to submit request');
-    } finally {
-      setLoading(false);
-    }
+    } catch (err: any) { setError(err.message || 'Failed to submit request'); }
+    finally { setLoading(false); }
   };
 
   if (success) {
@@ -188,7 +141,7 @@ export default function EmergencySOSPage() {
       <div className="min-h-[80vh] flex items-center justify-center">
         <Card className="max-w-md w-full text-center dashboard-card">
           <CardContent className="p-fluid-lg">
-            <div className="w-20 h-20 rounded-full bg-success/20 flex items-center justify-center mx-auto mb-6">
+            <div className="w-20 h-20 rounded-3xl bg-success/15 flex items-center justify-center mx-auto mb-6 border border-success/20" style={{ boxShadow: 'var(--glow-success)' }}>
               <CheckCircle2 className="w-10 h-10 text-success" />
             </div>
             <h2 className="font-display text-fluid-xl font-bold mb-2">Request Submitted!</h2>
@@ -208,9 +161,9 @@ export default function EmergencySOSPage() {
   return (
     <div className="max-w-2xl mx-auto space-y-fluid-md">
       {/* Header */}
-      <div className="flex items-center gap-fluid-md">
+      <div className="flex items-center gap-fluid-md animate-fade-up">
         <Link to="/resident">
-          <Button variant="ghost" size="icon" className="shrink-0">
+          <Button variant="ghost" size="icon" className="shrink-0 rounded-xl">
             <ArrowLeft className="w-5 h-5" />
           </Button>
         </Link>
@@ -225,20 +178,22 @@ export default function EmergencySOSPage() {
 
       {/* Current Alert Status */}
       {currentAlert && (
-        <Alert className={`
-          ${currentAlert.priority === 'critical' ? 'alert-critical' : 
-            currentAlert.priority === 'warning' ? 'alert-warning' : 'alert-info'}
-        `}>
-          <AlertTriangle className="h-4 w-4" />
-          <AlertDescription className="flex items-center justify-between">
-            <span className="text-fluid-sm">
-              <strong>Current Alert:</strong> {currentAlert.title}
-            </span>
-            <Badge variant="outline" className="ml-2">
+        <div className={`animate-fade-up stagger-1 ${
+          currentAlert.priority === 'critical' ? 'alert-critical' :
+          currentAlert.priority === 'warning' ? 'alert-warning' : 'alert-info'
+        }`}>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <AlertTriangle className="h-4 w-4" />
+              <span className="text-fluid-sm">
+                <strong>Current Alert:</strong> {currentAlert.title}
+              </span>
+            </div>
+            <Badge className={getPriorityBadge(currentAlert.priority)}>
               {currentAlert.priority}
             </Badge>
-          </AlertDescription>
-        </Alert>
+          </div>
+        </div>
       )}
 
       {error && (
@@ -250,32 +205,36 @@ export default function EmergencySOSPage() {
 
       {/* SOS Options Tabs */}
       <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'quick' | 'detailed')}>
-        <TabsList className="grid w-full grid-cols-2 h-auto">
-          <TabsTrigger value="quick" className="flex items-center gap-2 py-3">
+        <TabsList className="grid w-full grid-cols-2 h-auto rounded-xl bg-muted/60 p-1">
+          <TabsTrigger value="quick" className="flex items-center gap-2 py-3 rounded-lg data-[state=active]:bg-card data-[state=active]:shadow-sm">
             <Zap className="w-4 h-4" />
             <span className="text-fluid-sm">Quick SOS</span>
           </TabsTrigger>
-          <TabsTrigger value="detailed" className="flex items-center gap-2 py-3">
+          <TabsTrigger value="detailed" className="flex items-center gap-2 py-3 rounded-lg data-[state=active]:bg-card data-[state=active]:shadow-sm">
             <ClipboardList className="w-4 h-4" />
             <span className="text-fluid-sm">Detailed Request</span>
           </TabsTrigger>
         </TabsList>
 
         {/* Quick SOS Tab */}
-        <TabsContent value="quick" className="mt-4 space-y-4">
-          <Card className="dashboard-card border-destructive/30 bg-gradient-to-br from-destructive/5 to-orange-500/5">
+        <TabsContent value="quick" className="mt-4 space-y-4 animate-fade-up">
+          <Card className="dashboard-card border-destructive/20 overflow-hidden">
+            <div className="h-1 bg-gradient-to-r from-destructive via-orange-500 to-destructive" />
             <CardHeader className="text-center pb-2">
-              <div className="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-destructive to-orange-500 flex items-center justify-center mb-4 animate-pulse shadow-emergency">
-                <Zap className="w-10 h-10 text-white" />
+              <div className="relative mx-auto mb-4">
+                <div className="w-24 h-24 rounded-3xl bg-gradient-to-br from-destructive to-orange-500 flex items-center justify-center animate-sos-pulse">
+                  <Zap className="w-12 h-12 text-white" />
+                </div>
+                <div className="absolute inset-0 w-24 h-24 rounded-3xl animate-pulse-ring bg-destructive/20 mx-auto" />
               </div>
-              <CardTitle className="text-fluid-xl text-destructive">One-Tap Emergency</CardTitle>
+              <CardTitle className="text-fluid-xl text-destructive font-display">One-Tap Emergency</CardTitle>
               <CardDescription className="text-fluid-sm">
-                For immediate danger - no forms to fill. We'll use your location and profile data.
+                For immediate danger — no forms to fill. We'll use your location and profile data.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               {/* Location Status */}
-              <div className="p-4 rounded-xl bg-muted/50 border">
+              <div className="p-4 rounded-2xl bg-muted/40 border border-border/50">
                 <div className="flex items-center gap-3 mb-3">
                   <MapPin className="w-5 h-5 text-primary" />
                   <span className="font-medium text-fluid-sm">Your Location</span>
@@ -303,24 +262,24 @@ export default function EmergencySOSPage() {
               </div>
 
               {/* What will be sent */}
-              <div className="p-4 rounded-xl bg-muted/30 space-y-2">
+              <div className="p-4 rounded-2xl bg-muted/25 space-y-2 border border-border/30">
                 <p className="font-medium text-fluid-sm flex items-center gap-2">
                   <Shield className="w-4 h-4 text-primary" />
                   What rescuers will receive:
                 </p>
-                <ul className="text-fluid-xs text-muted-foreground space-y-1 ml-6">
-                  <li>• Your GPS coordinates (real-time)</li>
-                  <li>• Your saved address: {profile?.address || 'Not set'}</li>
-                  <li>• Your phone: {profile?.phone_number || 'Not set'}</li>
-                  <li>• Current alert level: {currentAlert?.priority || 'Normal'}</li>
-                  <li>• Priority: CRITICAL (highest)</li>
+                <ul className="text-fluid-xs text-muted-foreground space-y-1.5 ml-6">
+                  <li className="flex items-center gap-1.5"><div className="w-1 h-1 rounded-full bg-primary" /> Your GPS coordinates (real-time)</li>
+                  <li className="flex items-center gap-1.5"><div className="w-1 h-1 rounded-full bg-primary" /> Your saved address: {profile?.address || 'Not set'}</li>
+                  <li className="flex items-center gap-1.5"><div className="w-1 h-1 rounded-full bg-primary" /> Your phone: {profile?.phone_number || 'Not set'}</li>
+                  <li className="flex items-center gap-1.5"><div className="w-1 h-1 rounded-full bg-primary" /> Current alert level: {currentAlert?.priority || 'Normal'}</li>
+                  <li className="flex items-center gap-1.5"><div className="w-1.5 h-1.5 rounded-full bg-destructive" /> Priority: CRITICAL (highest)</li>
                 </ul>
               </div>
 
               <Button 
                 onClick={handleQuickSOS}
                 disabled={loading || location.loading}
-                className="w-full h-16 text-lg btn-emergency shadow-emergency"
+                className="w-full h-16 text-lg btn-emergency rounded-2xl"
               >
                 {loading ? (
                   <>
@@ -339,12 +298,12 @@ export default function EmergencySOSPage() {
         </TabsContent>
 
         {/* Detailed Request Tab */}
-        <TabsContent value="detailed" className="mt-4">
+        <TabsContent value="detailed" className="mt-4 animate-fade-up">
           <form onSubmit={handleDetailedSubmit} className="space-y-4">
             {/* Severity Selection */}
             <Card className="dashboard-card">
               <CardHeader className="pb-2">
-                <CardTitle className="text-fluid-lg">Emergency Level</CardTitle>
+                <CardTitle className="text-fluid-lg font-display">Emergency Level</CardTitle>
               </CardHeader>
               <CardContent>
                 <RadioGroup 
@@ -353,19 +312,15 @@ export default function EmergencySOSPage() {
                   className="grid grid-cols-1 sm:grid-cols-3 gap-3"
                 >
                   {[
-                    { value: 'critical', label: 'Critical', desc: 'Immediate danger', color: 'border-destructive bg-destructive/10', icon: '🔴' },
-                    { value: 'high', label: 'High', desc: 'Rising water', color: 'border-warning bg-warning/10', icon: '🟠' },
-                    { value: 'medium', label: 'Medium', desc: 'Need assistance', color: 'border-info bg-info/10', icon: '🔵' },
+                    { value: 'critical', label: 'Critical', desc: 'Immediate danger', color: 'border-destructive bg-destructive/5', icon: '🔴' },
+                    { value: 'high', label: 'High', desc: 'Rising water', color: 'border-warning bg-warning/5', icon: '🟠' },
+                    { value: 'medium', label: 'Medium', desc: 'Need assistance', color: 'border-info bg-info/5', icon: '🔵' },
                   ].map((level) => (
                     <div key={level.value}>
-                      <RadioGroupItem
-                        value={level.value}
-                        id={level.value}
-                        className="peer sr-only"
-                      />
+                      <RadioGroupItem value={level.value} id={level.value} className="peer sr-only" />
                       <Label
                         htmlFor={level.value}
-                        className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 cursor-pointer transition-all hover:shadow-md ${severity === level.value ? level.color : 'border-border hover:border-primary/30'}`}
+                        className={`flex flex-col items-center justify-center p-4 rounded-2xl border-2 cursor-pointer transition-all duration-200 hover:shadow-md ${severity === level.value ? level.color : 'border-border hover:border-primary/30'}`}
                       >
                         <span className="text-xl mb-1">{level.icon}</span>
                         <span className="font-semibold text-fluid-sm">{level.label}</span>
@@ -380,39 +335,20 @@ export default function EmergencySOSPage() {
             {/* Household Count */}
             <Card className="dashboard-card">
               <CardHeader className="pb-2">
-                <CardTitle className="text-fluid-lg flex items-center gap-2">
+                <CardTitle className="text-fluid-lg flex items-center gap-2 font-display">
                   <Users className="w-5 h-5 text-primary" />
                   People Needing Rescue
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="flex items-center gap-4">
-                  <Button 
-                    type="button" 
-                    variant="outline" 
-                    size="icon"
-                    className="w-12 h-12 rounded-xl"
-                    onClick={() => setHouseholdCount(Math.max(1, householdCount - 1))}
-                  >
-                    -
-                  </Button>
-                  <Input
-                    type="number"
-                    value={householdCount}
+                  <Button type="button" variant="outline" size="icon" className="w-12 h-12 rounded-2xl"
+                    onClick={() => setHouseholdCount(Math.max(1, householdCount - 1))}>-</Button>
+                  <Input type="number" value={householdCount}
                     onChange={(e) => setHouseholdCount(Math.max(1, parseInt(e.target.value) || 1))}
-                    className="w-24 text-center text-xl font-bold h-12"
-                    min={1}
-                    max={50}
-                  />
-                  <Button 
-                    type="button" 
-                    variant="outline" 
-                    size="icon"
-                    className="w-12 h-12 rounded-xl"
-                    onClick={() => setHouseholdCount(householdCount + 1)}
-                  >
-                    +
-                  </Button>
+                    className="w-24 text-center text-xl font-bold h-12 rounded-xl" min={1} max={50} />
+                  <Button type="button" variant="outline" size="icon" className="w-12 h-12 rounded-2xl"
+                    onClick={() => setHouseholdCount(householdCount + 1)}>+</Button>
                   <span className="text-muted-foreground text-fluid-sm">people</span>
                 </div>
               </CardContent>
@@ -421,7 +357,7 @@ export default function EmergencySOSPage() {
             {/* Special Needs */}
             <Card className="dashboard-card">
               <CardHeader className="pb-2">
-                <CardTitle className="text-fluid-lg">Special Needs (Optional)</CardTitle>
+                <CardTitle className="text-fluid-lg font-display">Special Needs (Optional)</CardTitle>
                 <CardDescription className="text-fluid-xs">Select if applicable for priority routing</CardDescription>
               </CardHeader>
               <CardContent>
@@ -432,18 +368,13 @@ export default function EmergencySOSPage() {
                     return (
                       <div 
                         key={option.id} 
-                        className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all ${isChecked ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/30'}`}
+                        className={`flex items-center gap-3 p-3 rounded-2xl border cursor-pointer transition-all duration-200 ${isChecked ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/30'}`}
                         onClick={() => handleSpecialNeedChange(option.id, !isChecked)}
                       >
-                        <Checkbox
-                          id={option.id}
-                          checked={isChecked}
-                          onCheckedChange={(checked) => handleSpecialNeedChange(option.id, checked as boolean)}
-                        />
+                        <Checkbox id={option.id} checked={isChecked}
+                          onCheckedChange={(checked) => handleSpecialNeedChange(option.id, checked as boolean)} />
                         <IconComponent className={`w-4 h-4 ${isChecked ? 'text-primary' : 'text-muted-foreground'}`} />
-                        <Label htmlFor={option.id} className="text-fluid-xs cursor-pointer flex-1">
-                          {option.label}
-                        </Label>
+                        <Label htmlFor={option.id} className="text-fluid-xs cursor-pointer flex-1">{option.label}</Label>
                       </div>
                     );
                   })}
@@ -454,13 +385,13 @@ export default function EmergencySOSPage() {
             {/* Location */}
             <Card className="dashboard-card">
               <CardHeader className="pb-2">
-                <CardTitle className="text-fluid-lg flex items-center gap-2">
+                <CardTitle className="text-fluid-lg flex items-center gap-2 font-display">
                   <MapPin className="w-5 h-5 text-primary" />
                   Your Location
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="p-3 rounded-xl bg-muted/50">
+                <div className="p-3 rounded-2xl bg-muted/40">
                   {location.loading ? (
                     <div className="flex items-center gap-2 text-muted-foreground">
                       <Loader2 className="w-4 h-4 animate-spin" />
@@ -471,21 +402,14 @@ export default function EmergencySOSPage() {
                   ) : (
                     <div className="flex items-center gap-2 text-success">
                       <CheckCircle2 className="w-4 h-4" />
-                      <span className="text-fluid-sm">
-                        Location found ({location.accuracy?.toFixed(0)}m accuracy)
-                      </span>
+                      <span className="text-fluid-sm">Location found ({location.accuracy?.toFixed(0)}m accuracy)</span>
                     </div>
                   )}
                 </div>
                 <div>
                   <Label htmlFor="address" className="text-fluid-sm">Address / Landmark</Label>
-                  <Input
-                    id="address"
-                    placeholder="e.g., Near San Juan Bridge, Purok 3"
-                    value={address}
-                    onChange={(e) => setAddress(e.target.value)}
-                    className="mt-1"
-                  />
+                  <Input id="address" placeholder="e.g., Near San Juan Bridge, Purok 3"
+                    value={address} onChange={(e) => setAddress(e.target.value)} className="mt-1 rounded-xl" />
                 </div>
               </CardContent>
             </Card>
@@ -493,34 +417,20 @@ export default function EmergencySOSPage() {
             {/* Description */}
             <Card className="dashboard-card">
               <CardHeader className="pb-2">
-                <CardTitle className="text-fluid-lg">Situation Description (Optional)</CardTitle>
+                <CardTitle className="text-fluid-lg font-display">Situation Description (Optional)</CardTitle>
               </CardHeader>
               <CardContent>
-                <Textarea
-                  placeholder="Describe your situation, water level, any dangers..."
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  rows={3}
-                />
+                <Textarea placeholder="Describe your situation, water level, any dangers..."
+                  value={description} onChange={(e) => setDescription(e.target.value)} rows={3} className="rounded-xl" />
               </CardContent>
             </Card>
 
             {/* Submit Button */}
-            <Button 
-              type="submit" 
-              className="w-full h-14 text-lg btn-emergency"
-              disabled={loading}
-            >
+            <Button type="submit" className="w-full h-14 text-lg btn-emergency rounded-2xl" disabled={loading}>
               {loading ? (
-                <>
-                  <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                  Sending Request...
-                </>
+                <><Loader2 className="w-5 h-5 mr-2 animate-spin" />Sending Request...</>
               ) : (
-                <>
-                  <AlertTriangle className="w-5 h-5 mr-2" />
-                  Send Rescue Request
-                </>
+                <><AlertTriangle className="w-5 h-5 mr-2" />Send Rescue Request</>
               )}
             </Button>
           </form>
@@ -532,7 +442,7 @@ export default function EmergencySOSPage() {
         <CardContent className="p-fluid-md">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
                 <Phone className="w-5 h-5 text-primary" />
               </div>
               <div>
@@ -548,4 +458,12 @@ export default function EmergencySOSPage() {
       </Card>
     </div>
   );
+}
+
+function getPriorityBadge(priority: string) {
+  switch (priority) {
+    case 'critical': return 'bg-destructive/15 text-destructive border border-destructive/20';
+    case 'warning': return 'bg-warning/15 text-warning border border-warning/20';
+    default: return 'bg-info/15 text-info border border-info/20';
+  }
 }

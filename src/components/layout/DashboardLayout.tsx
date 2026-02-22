@@ -96,33 +96,27 @@ export default function DashboardLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
-  // Track user location while they're actively using the app
   useLocationTracker();
 
   useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 1024);
-    };
-    
+    const checkMobile = () => setIsMobile(window.innerWidth < 1024);
     checkMobile();
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
   useEffect(() => {
-    if (!loading && !user) {
-      navigate('/auth');
-    }
+    if (!loading && !user) navigate('/auth');
   }, [user, loading, navigate]);
 
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="animate-pulse flex flex-col items-center gap-4">
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center animate-glow-teal">
             <Droplets className="w-8 h-8 text-white" />
           </div>
-          <p className="text-muted-foreground">Loading...</p>
+          <p className="text-muted-foreground font-display">Loading...</p>
         </div>
       </div>
     );
@@ -141,20 +135,20 @@ export default function DashboardLayout() {
   const SidebarContent = () => (
     <div className="flex flex-col h-full">
       {/* Logo */}
-      <div className="p-4 border-b border-sidebar-border">
-        <Link to="/" className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center">
-            <Droplets className="w-6 h-6 text-white" />
+      <div className="p-5 border-b border-sidebar-border/50">
+        <Link to="/" className="flex items-center gap-3 group">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-lg group-hover:shadow-primary/30 transition-shadow duration-300">
+            <Droplets className="w-5 h-5 text-white" />
           </div>
           <div>
-            <span className="font-display font-bold text-sidebar-foreground text-lg">FloodWatch</span>
-            <div className="text-xs text-sidebar-foreground/60">{roleTitle}</div>
+            <span className="font-display font-bold text-sidebar-foreground text-lg tracking-tight">FloodWatch</span>
+            <div className="text-[0.65rem] text-sidebar-primary font-medium uppercase tracking-widest">{roleTitle}</div>
           </div>
         </Link>
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
+      <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
         {navItems.map((item) => {
           const isActive = location.pathname === item.href;
           return (
@@ -163,41 +157,48 @@ export default function DashboardLayout() {
               to={item.href}
               onClick={() => setSidebarOpen(false)}
               className={cn(
-                'flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 text-sm',
+                'group flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 text-sm relative',
                 isActive
-                  ? 'bg-sidebar-primary text-sidebar-primary-foreground font-medium'
-                  : 'text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
+                  ? 'bg-sidebar-primary/15 text-sidebar-primary font-semibold'
+                  : 'text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground'
               )}
             >
-              <item.icon className="w-5 h-5 flex-shrink-0" />
+              {/* Glowing left accent for active */}
+              {isActive && (
+                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full bg-sidebar-primary shadow-[0_0_8px_hsl(168_80%_48%/0.6)]" />
+              )}
+              <item.icon className={cn(
+                'w-[18px] h-[18px] flex-shrink-0 transition-transform duration-200 group-hover:scale-110',
+                isActive && 'text-sidebar-primary'
+              )} />
               <span>{item.label}</span>
             </Link>
           );
         })}
       </nav>
 
-      {/* User Section - Fixed at bottom */}
-      <div className="p-3 border-t border-sidebar-border mt-auto shrink-0">
+      {/* User Section */}
+      <div className="p-3 border-t border-sidebar-border/50 mt-auto shrink-0">
         <Link
           to={`/${userRole === 'mdrrmo_admin' ? 'admin' : userRole === 'barangay_official' ? 'official' : userRole}/profile`}
-          className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
+          className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground transition-all duration-200 group"
         >
-          <Settings className="w-5 h-5" />
+          <Settings className="w-[18px] h-[18px] group-hover:rotate-45 transition-transform duration-300" />
           <span className="text-sm">Settings</span>
         </Link>
         
-        <div className="flex items-center gap-3 px-3 py-3 mt-2 rounded-lg bg-sidebar-accent/50">
-          <Avatar className="w-9 h-9">
+        <div className="flex items-center gap-3 px-3 py-3 mt-2 rounded-xl bg-sidebar-accent/40 border border-sidebar-border/30">
+          <Avatar className="w-9 h-9 ring-2 ring-sidebar-primary/30">
             <AvatarImage src={profile?.avatar_url || undefined} />
-            <AvatarFallback className="bg-sidebar-primary text-sidebar-primary-foreground text-sm">
+            <AvatarFallback className="bg-gradient-to-br from-primary to-accent text-white text-sm font-bold">
               {profile?.full_name?.charAt(0) || 'U'}
             </AvatarFallback>
           </Avatar>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-sidebar-foreground truncate">
+            <p className="text-sm font-semibold text-sidebar-foreground truncate">
               {profile?.full_name || 'User'}
             </p>
-            <p className="text-xs text-sidebar-foreground/60 truncate capitalize">
+            <p className="text-[0.65rem] text-sidebar-foreground/50 truncate capitalize">
               {userRole.replace('_', ' ')}
             </p>
           </div>
@@ -205,7 +206,7 @@ export default function DashboardLayout() {
             variant="ghost"
             size="icon"
             onClick={handleSignOut}
-            className="text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent shrink-0"
+            className="text-sidebar-foreground/40 hover:text-destructive hover:bg-destructive/10 shrink-0 transition-colors duration-200"
           >
             <LogOut className="w-4 h-4" />
           </Button>
@@ -217,12 +218,12 @@ export default function DashboardLayout() {
   return (
     <div className="min-h-screen flex w-full bg-background">
       {/* Desktop Sidebar */}
-      <aside className="hidden lg:flex lg:w-64 lg:flex-col lg:fixed lg:inset-y-0 bg-sidebar border-r border-sidebar-border">
+      <aside className="hidden lg:flex lg:w-64 lg:flex-col lg:fixed lg:inset-y-0 bg-gradient-to-b from-sidebar to-[hsl(220_35%_7%)] border-r border-sidebar-border/40">
         <SidebarContent />
       </aside>
 
       {/* Mobile Header & Sidebar */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-background border-b">
+      <div className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/50">
         <div className="flex items-center justify-between h-14 px-4">
           <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
             <SheetTrigger asChild>
@@ -230,7 +231,7 @@ export default function DashboardLayout() {
                 <Menu className="w-5 h-5" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="w-72 p-0 bg-sidebar">
+            <SheetContent side="left" className="w-72 p-0 bg-gradient-to-b from-sidebar to-[hsl(220_35%_7%)]">
               <SidebarContent />
             </SheetContent>
           </Sheet>
@@ -247,7 +248,7 @@ export default function DashboardLayout() {
               <Button variant="ghost" size="icon" className="rounded-full">
                 <Avatar className="w-8 h-8">
                   <AvatarImage src={profile?.avatar_url || undefined} />
-                  <AvatarFallback className="bg-primary text-primary-foreground text-sm">
+                  <AvatarFallback className="bg-gradient-to-br from-primary to-accent text-white text-sm">
                     {profile?.full_name?.charAt(0) || 'U'}
                   </AvatarFallback>
                 </Avatar>
