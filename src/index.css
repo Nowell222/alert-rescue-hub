@@ -1,135 +1,122 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* MDRRMO Flood Response System Design System
-   Color palette inspired by emergency response, nature, and water safety
-*/
+/* MDRRMO FloodWatch Design System — Command Center Aesthetic */
 
 @layer base {
   :root {
     /* Core backgrounds */
     --background: 210 20% 98%;
-    --foreground: 215 25% 15%;
+    --foreground: 215 25% 12%;
 
     --card: 0 0% 100%;
-    --card-foreground: 215 25% 15%;
+    --card-foreground: 215 25% 12%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 215 25% 15%;
+    --popover-foreground: 215 25% 12%;
 
-    /* Primary - Deep Ocean Blue (Trust, Safety) */
-    --primary: 210 85% 35%;
+    /* Primary - Deep Ocean Teal */
+    --primary: 168 80% 38%;
     --primary-foreground: 0 0% 100%;
 
-    /* Secondary - Calm Sky Blue */
-    --secondary: 200 70% 94%;
-    --secondary-foreground: 210 85% 25%;
+    /* Secondary - Soft Teal Tint */
+    --secondary: 170 45% 94%;
+    --secondary-foreground: 168 80% 25%;
 
-    /* Muted - Soft Gray-Blue */
-    --muted: 210 20% 95%;
-    --muted-foreground: 215 15% 50%;
+    /* Muted */
+    --muted: 210 18% 95%;
+    --muted-foreground: 215 15% 48%;
 
-    /* Accent - Vibrant Teal */
-    --accent: 175 65% 45%;
+    /* Accent - Vivid Teal */
+    --accent: 172 66% 50%;
     --accent-foreground: 0 0% 100%;
 
     /* Alert Colors */
-    --destructive: 0 75% 55%;
+    --destructive: 0 78% 55%;
     --destructive-foreground: 0 0% 100%;
 
-    --warning: 38 95% 50%;
-    --warning-foreground: 38 95% 15%;
+    --warning: 36 100% 50%;
+    --warning-foreground: 36 100% 12%;
 
-    --success: 145 65% 42%;
+    --success: 152 62% 42%;
     --success-foreground: 0 0% 100%;
 
-    --info: 200 85% 55%;
+    --info: 205 85% 55%;
     --info-foreground: 0 0% 100%;
 
-    /* Critical Emergency Red */
-    --emergency: 0 85% 50%;
+    /* Critical Emergency */
+    --emergency: 0 88% 50%;
     --emergency-foreground: 0 0% 100%;
 
     /* UI Elements */
-    --border: 214 25% 88%;
-    --input: 214 25% 88%;
-    --ring: 210 85% 35%;
+    --border: 214 22% 90%;
+    --input: 214 22% 90%;
+    --ring: 168 80% 38%;
 
-    --radius: 0.625rem;
+    --radius: 0.75rem;
 
-    /* Sidebar */
-    --sidebar-background: 215 25% 12%;
-    --sidebar-foreground: 210 15% 85%;
-    --sidebar-primary: 175 65% 50%;
+    /* Sidebar - Dark Navy Command */
+    --sidebar-background: 220 30% 10%;
+    --sidebar-foreground: 210 15% 80%;
+    --sidebar-primary: 168 80% 48%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 215 25% 18%;
-    --sidebar-accent-foreground: 210 15% 90%;
-    --sidebar-border: 215 25% 20%;
-    --sidebar-ring: 175 65% 50%;
+    --sidebar-accent: 220 25% 16%;
+    --sidebar-accent-foreground: 210 15% 92%;
+    --sidebar-border: 220 25% 18%;
+    --sidebar-ring: 168 80% 48%;
 
-    /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(210 85% 35%), hsl(200 80% 45%));
-    --gradient-hero: linear-gradient(180deg, hsl(210 85% 35%) 0%, hsl(175 65% 45%) 100%);
-    --gradient-danger: linear-gradient(135deg, hsl(0 85% 50%), hsl(25 90% 55%));
-    --gradient-success: linear-gradient(135deg, hsl(145 65% 42%), hsl(165 60% 50%));
-    --gradient-warning: linear-gradient(135deg, hsl(38 95% 50%), hsl(48 95% 55%));
-    --gradient-ocean: linear-gradient(180deg, hsl(200 70% 94%) 0%, hsl(210 85% 95%) 100%);
-
-    /* Shadows */
-    --shadow-sm: 0 1px 2px 0 hsl(215 25% 15% / 0.05);
-    --shadow: 0 4px 6px -1px hsl(215 25% 15% / 0.1), 0 2px 4px -2px hsl(215 25% 15% / 0.1);
-    --shadow-md: 0 10px 15px -3px hsl(215 25% 15% / 0.1), 0 4px 6px -4px hsl(215 25% 15% / 0.1);
-    --shadow-lg: 0 20px 25px -5px hsl(215 25% 15% / 0.1), 0 8px 10px -6px hsl(215 25% 15% / 0.1);
-    --shadow-glow: 0 0 20px hsl(210 85% 35% / 0.3);
-    --shadow-emergency: 0 0 30px hsl(0 85% 50% / 0.4);
+    /* Glow tokens */
+    --glow-primary: 0 0 20px hsl(168 80% 38% / 0.25);
+    --glow-warning: 0 0 16px hsl(36 100% 50% / 0.3);
+    --glow-critical: 0 0 24px hsl(0 78% 55% / 0.35);
+    --glow-info: 0 0 16px hsl(205 85% 55% / 0.25);
+    --glow-success: 0 0 16px hsl(152 62% 42% / 0.25);
   }
 
   .dark {
-    --background: 215 30% 8%;
+    --background: 220 30% 6%;
     --foreground: 210 20% 95%;
 
-    --card: 215 28% 12%;
+    --card: 220 28% 10%;
     --card-foreground: 210 20% 95%;
 
-    --popover: 215 28% 12%;
+    --popover: 220 28% 10%;
     --popover-foreground: 210 20% 95%;
 
-    --primary: 200 80% 55%;
-    --primary-foreground: 215 30% 8%;
+    --primary: 168 75% 48%;
+    --primary-foreground: 220 30% 6%;
 
-    --secondary: 215 25% 18%;
+    --secondary: 220 25% 16%;
     --secondary-foreground: 210 20% 90%;
 
-    --muted: 215 25% 16%;
-    --muted-foreground: 215 15% 60%;
+    --muted: 220 25% 14%;
+    --muted-foreground: 215 15% 58%;
 
-    --accent: 175 65% 55%;
-    --accent-foreground: 215 30% 8%;
+    --accent: 172 66% 55%;
+    --accent-foreground: 220 30% 6%;
 
-    --destructive: 0 65% 55%;
+    --destructive: 0 68% 55%;
     --destructive-foreground: 0 0% 100%;
 
-    --warning: 38 90% 55%;
-    --warning-foreground: 38 95% 10%;
+    --warning: 36 95% 55%;
+    --warning-foreground: 36 95% 10%;
 
-    --success: 145 60% 50%;
+    --success: 152 58% 48%;
     --success-foreground: 0 0% 100%;
 
-    --border: 215 25% 20%;
-    --input: 215 25% 20%;
-    --ring: 200 80% 55%;
+    --border: 220 25% 18%;
+    --input: 220 25% 18%;
+    --ring: 168 75% 48%;
 
-    --sidebar-background: 215 30% 6%;
-    --sidebar-foreground: 210 15% 85%;
-    --sidebar-primary: 175 65% 55%;
-    --sidebar-primary-foreground: 215 30% 8%;
-    --sidebar-accent: 215 25% 14%;
-    --sidebar-accent-foreground: 210 15% 90%;
-    --sidebar-border: 215 25% 15%;
-    --sidebar-ring: 175 65% 55%;
+    --sidebar-background: 220 35% 5%;
+    --sidebar-foreground: 210 15% 80%;
+    --sidebar-primary: 168 75% 52%;
+    --sidebar-primary-foreground: 220 35% 5%;
+    --sidebar-accent: 220 25% 12%;
+    --sidebar-accent-foreground: 210 15% 92%;
+    --sidebar-border: 220 25% 14%;
+    --sidebar-ring: 168 75% 52%;
   }
 }
 
@@ -140,7 +127,6 @@
 
   html {
     scroll-behavior: smooth;
-    /* Fluid base font size: scales from 14px to 16px based on viewport */
     font-size: clamp(0.875rem, 0.8rem + 0.4vw, 1rem);
   }
 
@@ -150,10 +136,11 @@
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Space Grotesk', system-ui, sans-serif;
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    @apply tracking-tight;
   }
 
-  /* Fluid typography scale */
+  /* Fluid typography */
   h1 { font-size: clamp(1.75rem, 1.5rem + 2vw, 3rem); }
   h2 { font-size: clamp(1.5rem, 1.25rem + 1.5vw, 2.25rem); }
   h3 { font-size: clamp(1.25rem, 1rem + 1vw, 1.75rem); }
@@ -162,126 +149,121 @@
 }
 
 @layer components {
-  /* Hero Button Variant - fluid sizing */
-  .btn-hero {
-    @apply bg-gradient-to-r from-primary to-accent text-white font-semibold rounded-lg shadow-lg transition-all duration-300;
-    padding: clamp(0.625rem, 0.5rem + 0.5vw, 0.875rem) clamp(1.25rem, 1rem + 1vw, 2rem);
-    font-size: clamp(0.875rem, 0.8rem + 0.25vw, 1rem);
-  }
-  
-  .btn-hero:hover {
-    @apply shadow-xl scale-105;
-    filter: brightness(1.1);
-  }
-
-  /* Emergency Button - fluid */
-  .btn-emergency {
-    @apply bg-gradient-to-r from-destructive to-orange-500 text-white font-bold rounded-xl shadow-lg animate-pulse;
-    padding: clamp(0.75rem, 0.5rem + 0.75vw, 1rem) clamp(1rem, 0.75rem + 1vw, 1.5rem);
-    font-size: clamp(0.875rem, 0.8rem + 0.25vw, 1rem);
-  }
-
-  /* Status Badges - fluid */
-  .badge-critical {
-    @apply bg-destructive text-destructive-foreground rounded-full font-bold uppercase tracking-wide;
-    padding: clamp(0.2rem, 0.15rem + 0.15vw, 0.25rem) clamp(0.5rem, 0.4rem + 0.25vw, 0.75rem);
-    font-size: clamp(0.625rem, 0.6rem + 0.1vw, 0.75rem);
-  }
-
-  .badge-warning {
-    @apply bg-warning text-warning-foreground rounded-full font-bold uppercase tracking-wide;
-    padding: clamp(0.2rem, 0.15rem + 0.15vw, 0.25rem) clamp(0.5rem, 0.4rem + 0.25vw, 0.75rem);
-    font-size: clamp(0.625rem, 0.6rem + 0.1vw, 0.75rem);
-  }
-
-  .badge-success {
-    @apply bg-success text-success-foreground rounded-full font-bold uppercase tracking-wide;
-    padding: clamp(0.2rem, 0.15rem + 0.15vw, 0.25rem) clamp(0.5rem, 0.4rem + 0.25vw, 0.75rem);
-    font-size: clamp(0.625rem, 0.6rem + 0.1vw, 0.75rem);
-  }
-
-  .badge-info {
-    @apply bg-info text-info-foreground rounded-full font-bold uppercase tracking-wide;
-    padding: clamp(0.2rem, 0.15rem + 0.15vw, 0.25rem) clamp(0.5rem, 0.4rem + 0.25vw, 0.75rem);
-    font-size: clamp(0.625rem, 0.6rem + 0.1vw, 0.75rem);
-  }
-
-  /* Dashboard Cards - fluid padding */
+  /* ───── Glass Cards ───── */
   .dashboard-card {
-    @apply bg-card rounded-xl border border-border shadow-sm transition-all duration-300;
-    padding: clamp(1rem, 0.75rem + 1vw, 1.5rem);
-    border-radius: clamp(0.5rem, 0.4rem + 0.4vw, 0.75rem);
+    @apply bg-card/80 backdrop-blur-sm border border-border/60 shadow-sm transition-all duration-300;
+    border-radius: 1rem;
   }
-
   .dashboard-card:hover {
     @apply shadow-md border-primary/20;
   }
 
-  /* Stat Cards - fluid */
-  .stat-card {
-    @apply bg-gradient-to-br from-card to-secondary/30 border border-border/50;
-    padding: clamp(0.75rem, 0.5rem + 0.75vw, 1.25rem);
-    border-radius: clamp(0.5rem, 0.4rem + 0.4vw, 0.75rem);
+  .glass {
+    @apply bg-white/70 backdrop-blur-xl border border-white/30 shadow-lg;
+  }
+  .glass-dark {
+    @apply bg-black/40 backdrop-blur-xl border border-white/10;
   }
 
-  /* Map Container */
+  /* ───── Stat Cards ───── */
+  .stat-card {
+    @apply bg-gradient-to-br from-card to-secondary/30 border border-border/50 backdrop-blur-sm;
+    border-radius: 1rem;
+    padding: clamp(0.75rem, 0.5rem + 0.75vw, 1.25rem);
+  }
+
+  /* ───── Buttons ───── */
+  .btn-hero {
+    @apply bg-gradient-to-r from-primary to-accent text-white font-semibold rounded-xl shadow-lg transition-all duration-300;
+    padding: clamp(0.625rem, 0.5rem + 0.5vw, 0.875rem) clamp(1.25rem, 1rem + 1vw, 2rem);
+    font-size: clamp(0.875rem, 0.8rem + 0.25vw, 1rem);
+  }
+  .btn-hero:hover {
+    @apply shadow-xl scale-[1.03];
+    filter: brightness(1.08);
+  }
+
+  .btn-emergency {
+    @apply text-white font-bold rounded-2xl shadow-xl relative overflow-hidden;
+    background: linear-gradient(135deg, hsl(0 88% 50%), hsl(25 95% 52%));
+    padding: clamp(0.75rem, 0.5rem + 0.75vw, 1rem) clamp(1rem, 0.75rem + 1vw, 1.5rem);
+    font-size: clamp(0.875rem, 0.8rem + 0.25vw, 1rem);
+    box-shadow: var(--glow-critical);
+    animation: sos-pulse 2s ease-in-out infinite;
+  }
+
+  /* ───── Alert Cards with glow borders ───── */
+  .alert-critical {
+    @apply border-l-4 border-destructive rounded-r-xl;
+    background: hsl(var(--destructive) / 0.08);
+    box-shadow: inset 0 0 20px hsl(0 78% 55% / 0.05), var(--glow-critical);
+    padding: clamp(0.75rem, 0.5rem + 0.5vw, 1rem);
+  }
+  .alert-warning {
+    @apply border-l-4 border-warning rounded-r-xl;
+    background: hsl(var(--warning) / 0.08);
+    box-shadow: inset 0 0 20px hsl(36 100% 50% / 0.05), var(--glow-warning);
+    padding: clamp(0.75rem, 0.5rem + 0.5vw, 1rem);
+  }
+  .alert-info {
+    @apply border-l-4 border-info rounded-r-xl;
+    background: hsl(var(--info) / 0.08);
+    box-shadow: inset 0 0 20px hsl(205 85% 55% / 0.05), var(--glow-info);
+    padding: clamp(0.75rem, 0.5rem + 0.5vw, 1rem);
+  }
+
+  /* ───── Status Badges — pill-shaped ───── */
+  .badge-critical {
+    @apply bg-destructive/15 text-destructive rounded-full font-semibold uppercase tracking-wide border border-destructive/20;
+    padding: 0.2rem 0.65rem;
+    font-size: 0.68rem;
+  }
+  .badge-warning {
+    @apply bg-warning/15 text-warning rounded-full font-semibold uppercase tracking-wide border border-warning/20;
+    padding: 0.2rem 0.65rem;
+    font-size: 0.68rem;
+  }
+  .badge-success {
+    @apply bg-success/15 text-success rounded-full font-semibold uppercase tracking-wide border border-success/20;
+    padding: 0.2rem 0.65rem;
+    font-size: 0.68rem;
+  }
+  .badge-info {
+    @apply bg-info/15 text-info rounded-full font-semibold uppercase tracking-wide border border-info/20;
+    padding: 0.2rem 0.65rem;
+    font-size: 0.68rem;
+  }
+
+  /* ───── Map Container ───── */
   .map-container {
     @apply overflow-hidden border border-border shadow-md;
-    border-radius: clamp(0.5rem, 0.4rem + 0.4vw, 0.75rem);
+    border-radius: 1rem;
     min-height: clamp(200px, 30vh, 400px);
   }
 
-  /* Alert Cards - fluid */
-  .alert-critical {
-    @apply bg-destructive/10 border-l-4 border-destructive rounded-r-lg;
-    padding: clamp(0.75rem, 0.5rem + 0.5vw, 1rem);
-  }
-
-  .alert-warning {
-    @apply bg-warning/10 border-l-4 border-warning rounded-r-lg;
-    padding: clamp(0.75rem, 0.5rem + 0.5vw, 1rem);
-  }
-
-  .alert-info {
-    @apply bg-info/10 border-l-4 border-info rounded-r-lg;
-    padding: clamp(0.75rem, 0.5rem + 0.5vw, 1rem);
-  }
-
-  /* Glass Effect */
-  .glass {
-    @apply bg-white/80 backdrop-blur-md border border-white/20;
-  }
-
-  .glass-dark {
-    @apply bg-black/40 backdrop-blur-md border border-white/10;
-  }
-
-  /* Fluid icon containers */
+  /* ───── Icon containers ───── */
   .icon-box-sm {
     width: clamp(2rem, 1.75rem + 1vw, 2.5rem);
     height: clamp(2rem, 1.75rem + 1vw, 2.5rem);
   }
-
   .icon-box-md {
     width: clamp(2.5rem, 2rem + 1.5vw, 3rem);
     height: clamp(2.5rem, 2rem + 1.5vw, 3rem);
   }
-
   .icon-box-lg {
     width: clamp(3rem, 2.5rem + 2vw, 4rem);
     height: clamp(3rem, 2.5rem + 2vw, 4rem);
   }
 
-  /* Fluid spacing utilities */
+  /* ───── Fluid spacing ───── */
   .gap-fluid-sm { gap: clamp(0.5rem, 0.25rem + 0.5vw, 0.75rem); }
   .gap-fluid-md { gap: clamp(0.75rem, 0.5rem + 0.75vw, 1.25rem); }
   .gap-fluid-lg { gap: clamp(1rem, 0.75rem + 1vw, 1.5rem); }
-  
   .p-fluid-sm { padding: clamp(0.5rem, 0.25rem + 0.5vw, 0.75rem); }
   .p-fluid-md { padding: clamp(0.75rem, 0.5rem + 0.75vw, 1.25rem); }
   .p-fluid-lg { padding: clamp(1rem, 0.75rem + 1vw, 1.5rem); }
 
-  /* Fluid text sizes */
+  /* ───── Fluid text ───── */
   .text-fluid-xs { font-size: clamp(0.625rem, 0.6rem + 0.1vw, 0.75rem); }
   .text-fluid-sm { font-size: clamp(0.75rem, 0.7rem + 0.15vw, 0.875rem); }
   .text-fluid-base { font-size: clamp(0.875rem, 0.8rem + 0.25vw, 1rem); }
@@ -292,39 +274,50 @@
 }
 
 @layer utilities {
-  /* Custom animations */
+  /* ───── Animations ───── */
   @keyframes float {
-    0%, 100% { transform: translateY(0px); }
+    0%, 100% { transform: translateY(0); }
     50% { transform: translateY(-10px); }
   }
-
   @keyframes pulse-ring {
     0% { transform: scale(1); opacity: 1; }
     100% { transform: scale(1.5); opacity: 0; }
   }
-
   @keyframes slide-in-right {
     from { transform: translateX(100%); opacity: 0; }
     to { transform: translateX(0); opacity: 1; }
   }
-
-  .animate-float {
-    animation: float 3s ease-in-out infinite;
+  @keyframes sos-pulse {
+    0%, 100% { box-shadow: 0 0 20px hsl(0 88% 50% / 0.4), 0 0 40px hsl(0 88% 50% / 0.1); transform: scale(1); }
+    50% { box-shadow: 0 0 30px hsl(0 88% 50% / 0.6), 0 0 60px hsl(0 88% 50% / 0.2); transform: scale(1.02); }
+  }
+  @keyframes glow-teal {
+    0%, 100% { box-shadow: 0 0 8px hsl(168 80% 48% / 0.4); }
+    50% { box-shadow: 0 0 16px hsl(168 80% 48% / 0.6); }
+  }
+  @keyframes fade-up {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
   }
 
-  .animate-pulse-ring {
-    animation: pulse-ring 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-  }
+  .animate-float { animation: float 3s ease-in-out infinite; }
+  .animate-pulse-ring { animation: pulse-ring 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+  .animate-slide-in-right { animation: slide-in-right 0.3s ease-out; }
+  .animate-sos-pulse { animation: sos-pulse 2s ease-in-out infinite; }
+  .animate-glow-teal { animation: glow-teal 2s ease-in-out infinite; }
+  .animate-fade-up { animation: fade-up 0.5s ease-out both; }
 
-  .animate-slide-in-right {
-    animation: slide-in-right 0.3s ease-out;
-  }
+  /* Staggered fade-up */
+  .stagger-1 { animation-delay: 0.05s; }
+  .stagger-2 { animation-delay: 0.1s; }
+  .stagger-3 { animation-delay: 0.15s; }
+  .stagger-4 { animation-delay: 0.2s; }
+  .stagger-5 { animation-delay: 0.25s; }
 
   /* Text gradients */
   .text-gradient-primary {
     @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent;
   }
-
   .text-gradient-hero {
     @apply bg-clip-text text-transparent bg-gradient-to-r from-primary via-accent to-success;
   }
