@@ -54,6 +54,10 @@ export interface WeatherForecast {
 }
 
 export interface RescueRequest {
+  zone_id: ReactNode;
+  notes: any;
+  responder_id: any;
+  completion_notes: ReactNode;
   id: string;
   requester_id: string | null;
   severity: RequestSeverity;
